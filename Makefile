@@ -1,7 +1,10 @@
-all: install
+all: install chevalier
 
 install: build check
 	go install
+
+chevalier:
+	cd chevalier ; make
 
 build: protobuf 
 	go build

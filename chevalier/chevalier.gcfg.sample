@@ -1,0 +1,3 @@
+[chevalier]
+listenaddress = "tcp://*:6283"
+elasticsearchendpoint = "localhost"

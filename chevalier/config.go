@@ -2,8 +2,8 @@ package main
 
 type Config struct {
 	Chevalier struct {
-		// In host:port format.
-		ElasticsearchEndpoint string
+		// Just the hostname, not the port.
+		ElasticsearchHost string
 		// ZMQ URI to listen on.
 		ListenAddress string
 	}

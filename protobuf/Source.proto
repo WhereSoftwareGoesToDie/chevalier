@@ -1,0 +1,14 @@
+package chevalier;
+
+// This is a dummy protobuf for testing purposes; the actual update
+// interface hasn't yet been defined.
+
+message Source {
+        message Tag {
+                required string field = 1;
+                required string value = 2;
+        }
+        repeated Tag     source = 1;
+}
+
+// vim: set expandtab tabstop=8:

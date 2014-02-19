@@ -2,18 +2,20 @@ package chevalier
 
 import (
 	es "github.com/mattbaird/elastigo/core"
+	"github.com/mattbaird/elastigo/api"
 	"fmt"
 	"strings"
+	"encoding/base64"
 	"crypto/sha1"
 )
 
 type ElasticsearchSourceTag struct {
-	Field string
-	Value string
+	Field string `json:"tag_field"`
+	Value string `json:"tag_value"`
 }
 
 type ElasticsearchSource struct {
-	Source []ElasticsearchSourceTag
+	Source []ElasticsearchSourceTag `json:"source"`
 }
 
 // GetID returns a (probably) unique ID for an ElasticsearchSource, in
@@ -26,7 +28,8 @@ func (s *ElasticsearchSource) GetID() string {
 	}
 	key := []byte(strings.Join(tagKeys, "\n"))
 	hash := sha1.Sum(key)
-	return string(hash[:sha1.Size])
+	id := base64.StdEncoding.EncodeToString(hash[:sha1.Size])
+	return id
 }
 
 func NewElasticsearchSource(source *DataSource) *ElasticsearchSource {
@@ -34,7 +37,7 @@ func NewElasticsearchSource(source *DataSource) *ElasticsearchSource {
 	esSource.Source = make([]ElasticsearchSourceTag, len(source.Source))
 	for i, tagPtr := range source.Source {
 		esSource.Source[i].Field = *tagPtr.Field
-		esSource.Source[i].Value = *tagPtr.Field
+		esSource.Source[i].Value = *tagPtr.Value
 	}
 	return esSource
 }
@@ -48,6 +51,7 @@ type ElasticsearchWriter struct {
 
 func NewElasticsearchWriter(host string, maxConns int, retrySeconds int, index, dataType string) *ElasticsearchWriter {
 	writer := new(ElasticsearchWriter)
+	api.Domain = host
 	writer.indexer = es.NewBulkIndexerErrors(maxConns, retrySeconds)
 	writer.indexName = index
 	writer.dataType = dataType
@@ -56,9 +60,10 @@ func NewElasticsearchWriter(host string, maxConns int, retrySeconds int, index, 
 	return writer
 }
 
-func (w *ElasticsearchWriter) Write(source *DataSource) {
+func (w *ElasticsearchWriter) Write(source *DataSource) error {
 	esSource := NewElasticsearchSource(source)
-	w.indexer.Index(w.indexName, w.dataType, esSource.GetID(), "", nil, esSource)
+	err := w.indexer.Index(w.indexName, w.dataType, esSource.GetID(), "", nil, esSource)
+	return err
 }
 
 func (w *ElasticsearchWriter) WaitDone() {

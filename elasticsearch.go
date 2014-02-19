@@ -43,6 +43,7 @@ type ElasticsearchWriter struct {
 	indexer *es.BulkIndexer
 	indexName string
 	dataType string
+	done chan bool
 }
 
 func NewElasticsearchWriter(host string, maxConns int, retrySeconds int, index, dataType string) *ElasticsearchWriter {
@@ -50,10 +51,16 @@ func NewElasticsearchWriter(host string, maxConns int, retrySeconds int, index, 
 	writer.indexer = es.NewBulkIndexerErrors(maxConns, retrySeconds)
 	writer.indexName = index
 	writer.dataType = dataType
+	writer.done = make(chan bool)
+	writer.indexer.Run(writer.done)
 	return writer
 }
 
 func (w *ElasticsearchWriter) Write(source *DataSource) {
 	esSource := NewElasticsearchSource(source)
 	w.indexer.Index(w.indexName, w.dataType, esSource.GetID(), "", nil, esSource)
+}
+
+func (w *ElasticsearchWriter) WaitDone() {
+	<-w.done
 }

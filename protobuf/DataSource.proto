@@ -3,6 +3,10 @@ package chevalier;
 // This is a dummy protobuf for testing purposes; the actual update
 // interface hasn't yet been defined.
 
+message DataSourceBurst {
+        repeated DataSource sources = 1;
+}
+
 message DataSource {
         message Tag {
                 required string field = 1;

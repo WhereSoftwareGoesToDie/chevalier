@@ -9,6 +9,13 @@ import (
 	"io"
 )
 
+func handleErrors(w *chevalier.ElasticsearchWriter) {
+	ch := w.GetErrorChan()
+	for errBuf := range ch {
+		log.Println(errBuf.Err)
+	}
+}
+
 func main() {
 	esHost := flag.String("host", "localhost", "Elasticsearch host to connect to")
 	flag.Parse()
@@ -27,6 +34,7 @@ func main() {
 		if (err != nil) {
 			log.Println("Writer error: %v", err)
 		}
+		go handleErrors(writer)
 	}
-	writer.WaitDone()
+	writer.Shutdown()
 }

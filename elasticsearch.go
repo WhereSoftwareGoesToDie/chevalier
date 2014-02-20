@@ -66,6 +66,10 @@ func (w *ElasticsearchWriter) Write(source *DataSource) error {
 	return err
 }
 
-func (w *ElasticsearchWriter) WaitDone() {
-	<-w.done
+func (w *ElasticsearchWriter) Shutdown() {
+	w.done <- true
+}
+
+func (w *ElasticsearchWriter) GetErrorChan() (chan *es.ErrorBuffer) {
+	return w.indexer.ErrorChannel
 }

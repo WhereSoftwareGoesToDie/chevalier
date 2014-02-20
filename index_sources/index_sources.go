@@ -1,12 +1,12 @@
 package main
 
 import (
-	"github.com/anchor/chevalier"
 	"flag"
-	"os"
-	"log"
-	"io/ioutil"
+	"github.com/anchor/chevalier"
 	"io"
+	"io/ioutil"
+	"log"
+	"os"
 )
 
 func handleErrors(w *chevalier.ElasticsearchWriter) {
@@ -31,7 +31,7 @@ func main() {
 	}
 	for _, source := range burst.Sources {
 		err = writer.Write(source)
-		if (err != nil) {
+		if err != nil {
 			log.Println("Writer error: %v", err)
 		}
 		go handleErrors(writer)

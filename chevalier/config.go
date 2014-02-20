@@ -8,4 +8,3 @@ type Config struct {
 		ListenAddress string
 	}
 }
-

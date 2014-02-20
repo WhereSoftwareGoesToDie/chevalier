@@ -1,10 +1,10 @@
 package main
 
 import (
-	zmq "github.com/pebbe/zmq4"
-	"flag"
-	"log"
 	"code.google.com/p/gcfg"
+	"flag"
+	zmq "github.com/pebbe/zmq4"
+	"log"
 )
 
 func main() {

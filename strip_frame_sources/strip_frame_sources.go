@@ -1,27 +1,16 @@
-/* 
+/*
 strip_frame_sources takes a DataBurst on stdin and writes a
 DataSourceBurst to stdout.
 */
 package main
 
 import (
+	"bytes"
 	"github.com/anchor/bletchley/dataframe"
 	"github.com/anchor/chevalier"
-	"os"
 	"log"
-	"bytes"
+	"os"
 )
-
-func frameSource(frame *dataframe.DataFrame) *chevalier.DataSource {
-	source := new(chevalier.DataSource)
-	source.Source = make([]*chevalier.DataSource_Tag, len(frame.Source))
-	for i, tag := range frame.Source {
-		source.Source[i] = new(chevalier.DataSource_Tag)
-		source.Source[i].Field = tag.Field
-		source.Source[i].Value = tag.Value
-	}
-	return source
-}
 
 func main() {
 	var buf bytes.Buffer
@@ -35,7 +24,7 @@ func main() {
 	}
 	sources := make([]*chevalier.DataSource, len(burst.Frames))
 	for i, frame := range burst.Frames {
-		sources[i] = frameSource(frame)
+		sources[i] = chevalier.DataFrameSource(frame)
 	}
 	sourceBurst := chevalier.BuildSourceBurst(sources)
 	if err != nil {

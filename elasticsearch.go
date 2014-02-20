@@ -1,21 +1,16 @@
 package chevalier
 
 import (
-	es "github.com/mattbaird/elastigo/core"
-	"github.com/mattbaird/elastigo/api"
-	"fmt"
-	"strings"
-	"encoding/base64"
 	"crypto/sha1"
+	"encoding/base64"
+	"fmt"
+	"github.com/mattbaird/elastigo/api"
+	es "github.com/mattbaird/elastigo/core"
+	"strings"
 )
 
-type ElasticsearchSourceTag struct {
-	Field string `json:"tag_field"`
-	Value string `json:"tag_value"`
-}
-
 type ElasticsearchSource struct {
-	Source []ElasticsearchSourceTag `json:"source"`
+	Source map[string]string `json:"source"`
 }
 
 // GetID returns a (probably) unique ID for an ElasticsearchSource, in
@@ -23,8 +18,10 @@ type ElasticsearchSource struct {
 // separated by newlines.
 func (s *ElasticsearchSource) GetID() string {
 	tagKeys := make([]string, len(s.Source))
-	for i, tag := range s.Source {
-		tagKeys[i] = fmt.Sprintf("%s_%s", tag.Field, tag.Value)
+	idx := 0
+	for field, value := range s.Source {
+		tagKeys[idx] = fmt.Sprintf("%s_%s", field, value)
+		idx++
 	}
 	key := []byte(strings.Join(tagKeys, "\n"))
 	hash := sha1.Sum(key)
@@ -34,19 +31,18 @@ func (s *ElasticsearchSource) GetID() string {
 
 func NewElasticsearchSource(source *DataSource) *ElasticsearchSource {
 	esSource := new(ElasticsearchSource)
-	esSource.Source = make([]ElasticsearchSourceTag, len(source.Source))
-	for i, tagPtr := range source.Source {
-		esSource.Source[i].Field = *tagPtr.Field
-		esSource.Source[i].Value = *tagPtr.Value
+	esSource.Source = make(map[string]string, 0)
+	for _, tagPtr := range source.Source {
+		esSource.Source[*tagPtr.Field] = *tagPtr.Value
 	}
 	return esSource
 }
 
 type ElasticsearchWriter struct {
-	indexer *es.BulkIndexer
+	indexer   *es.BulkIndexer
 	indexName string
-	dataType string
-	done chan bool
+	dataType  string
+	done      chan bool
 }
 
 func NewElasticsearchWriter(host string, maxConns int, retrySeconds int, index, dataType string) *ElasticsearchWriter {
@@ -70,6 +66,6 @@ func (w *ElasticsearchWriter) Shutdown() {
 	w.done <- true
 }
 
-func (w *ElasticsearchWriter) GetErrorChan() (chan *es.ErrorBuffer) {
+func (w *ElasticsearchWriter) GetErrorChan() chan *es.ErrorBuffer {
 	return w.indexer.ErrorChannel
 }

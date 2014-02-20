@@ -1,8 +1,9 @@
 package chevalier
 
 import (
-	"github.com/mattbaird/elastigo/search"
 	"encoding/json"
+	"github.com/mattbaird/elastigo/search"
+	"github.com/mattbaird/elastigo/api"
 )
 
 func NewSourceRequestTag(field, value string) *SourceRequest_Tag {
@@ -16,13 +17,14 @@ func NewSourceRequestTag(field, value string) *SourceRequest_Tag {
 
 type QueryEngine struct {
 	indexName string
-	dataType string
+	dataType  string
 }
 
-func NewQueryEngine(indexName, dataType string) *QueryEngine {
+func NewQueryEngine(host, indexName, dataType string) *QueryEngine {
 	e := new(QueryEngine)
 	e.indexName = indexName
 	e.dataType = dataType
+	api.Domain = host
 	return e
 }
 
@@ -30,7 +32,7 @@ func (e *QueryEngine) buildTagQuery(tag *SourceRequest_Tag) *search.QueryDsl {
 	qs := new(search.QueryString)
 	qs.Fields = make([]string, 0)
 	qs.Fields = append(qs.Fields, *tag.Field)
-	qs.Query  = *tag.Value
+	qs.Query = *tag.Value
 	q := search.Query().Qs(qs)
 	return q
 }
@@ -42,12 +44,10 @@ func (e *QueryEngine) BuildQuery(req *SourceRequest) ([]byte, error) {
 	for i, tag := range tags {
 		tagQueries[i] = e.buildTagQuery(tag)
 	}
-	fmt.Println(tags)
-	fmt.Println(tagQueries)
 	query := map[string]interface{}{
-		"query":map[string]interface{}{
-			"bool":map[string]interface{}{
-				"must":tagQueries,
+		"query": map[string]interface{}{
+			"bool": map[string]interface{}{
+				"must": tagQueries,
 			},
 		},
 	}

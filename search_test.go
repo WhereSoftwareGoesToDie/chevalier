@@ -5,7 +5,7 @@ import (
 )
 
 func TestBuildQuery(t *testing.T) {
-	engine := NewQueryEngine("chevalier_test", "datasource")
+	engine := NewQueryEngine("localhost", "chevalier_test", "datasource")
 	query := new(SourceRequest)
 	query.Tags = make([]*SourceRequest_Tag, 2)
 	query.Tags[0] = NewSourceRequestTag("hostname", "*.example.com")

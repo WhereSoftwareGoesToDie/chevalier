@@ -2,6 +2,7 @@ package chevalier
 
 import (
 	"testing"
+	"encoding/json"
 )
 
 func TestBuildQuery(t *testing.T) {
@@ -10,7 +11,7 @@ func TestBuildQuery(t *testing.T) {
 	query.Tags = make([]*SourceRequest_Tag, 2)
 	query.Tags[0] = NewSourceRequestTag("hostname", "*.example.com")
 	query.Tags[1] = NewSourceRequestTag("metric", "cpu")
-	json, err := engine.BuildQuery(query)
+	json, err := json.Marshal(engine.BuildQuery(query))
 	if err != nil {
 		t.Errorf("%v", err)
 	}

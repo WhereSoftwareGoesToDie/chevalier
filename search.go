@@ -1,19 +1,10 @@
 package chevalier
 
 import (
-	"encoding/json"
 	"github.com/mattbaird/elastigo/search"
 	"github.com/mattbaird/elastigo/api"
+	es "github.com/mattbaird/elastigo/core"
 )
-
-func NewSourceRequestTag(field, value string) *SourceRequest_Tag {
-	tag := new(SourceRequest_Tag)
-	f := field
-	v := value
-	tag.Field = &f
-	tag.Value = &v
-	return tag
-}
 
 type QueryEngine struct {
 	indexName string
@@ -37,7 +28,9 @@ func (e *QueryEngine) buildTagQuery(tag *SourceRequest_Tag) *search.QueryDsl {
 	return q
 }
 
-func (e *QueryEngine) BuildQuery(req *SourceRequest) ([]byte, error) {
+type SourceQuery map[string]interface{}
+
+func (e *QueryEngine) BuildQuery(req *SourceRequest) (SourceQuery) {
 	_ = search.Search(e.indexName).Type(e.dataType)
 	tags := req.GetTags()
 	tagQueries := make([]*search.QueryDsl, len(tags))
@@ -45,12 +38,26 @@ func (e *QueryEngine) BuildQuery(req *SourceRequest) ([]byte, error) {
 		tagQueries[i] = e.buildTagQuery(tag)
 	}
 	query := map[string]interface{}{
+		"size": 100000,
 		"query": map[string]interface{}{
 			"bool": map[string]interface{}{
 				"must": tagQueries,
 			},
 		},
 	}
-	data, err := json.Marshal(query)
-	return data, err
+	return SourceQuery(query)
+}
+
+func (e *QueryEngine) RunSourceRequest(req *SourceRequest) (*es.SearchResult, error) {
+	q := e.BuildQuery(req)
+	res, err := es.SearchRequest(false, e.indexName, e.dataType, q, "", 0)
+	return &res, err
+}
+
+func FmtResult(result *es.SearchResult) ([]string) {
+	results := make([]string, len(result.Hits.Hits))
+	for i, hit := range result.Hits.Hits {
+		results[i] = string(hit.Source[:])
+	}
+	return results
 }

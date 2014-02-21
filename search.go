@@ -1,9 +1,9 @@
 package chevalier
 
 import (
-	"github.com/mattbaird/elastigo/search"
 	"github.com/mattbaird/elastigo/api"
 	es "github.com/mattbaird/elastigo/core"
+	"github.com/mattbaird/elastigo/search"
 )
 
 type QueryEngine struct {
@@ -30,7 +30,7 @@ func (e *QueryEngine) buildTagQuery(tag *SourceRequest_Tag) *search.QueryDsl {
 
 type SourceQuery map[string]interface{}
 
-func (e *QueryEngine) BuildQuery(req *SourceRequest) (SourceQuery) {
+func (e *QueryEngine) BuildQuery(req *SourceRequest) SourceQuery {
 	_ = search.Search(e.indexName).Type(e.dataType)
 	tags := req.GetTags()
 	tagQueries := make([]*search.QueryDsl, len(tags))
@@ -54,7 +54,7 @@ func (e *QueryEngine) RunSourceRequest(req *SourceRequest) (*es.SearchResult, er
 	return &res, err
 }
 
-func FmtResult(result *es.SearchResult) ([]string) {
+func FmtResult(result *es.SearchResult) []string {
 	results := make([]string, len(result.Hits.Hits))
 	for i, hit := range result.Hits.Hits {
 		results[i] = string(hit.Source[:])

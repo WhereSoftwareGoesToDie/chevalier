@@ -6,5 +6,9 @@ type Config struct {
 		ElasticsearchHost string
 		// ZMQ URI to listen on.
 		ListenAddress string
+		// Vaultaire full read endpoint
+		VaultaireReadEndpoint string
+		// Vaultaire update endpoint
+		VaultaireUpdateEndpoint string
 	}
 }

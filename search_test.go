@@ -1,8 +1,8 @@
 package chevalier
 
 import (
-	"testing"
 	"encoding/json"
+	"testing"
 )
 
 func TestBuildQuery(t *testing.T) {

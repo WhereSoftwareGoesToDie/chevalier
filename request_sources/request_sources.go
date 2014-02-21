@@ -2,13 +2,13 @@ package main
 
 import (
 	"flag"
-	"github.com/anchor/chevalier"
 	"fmt"
-	"strings"
+	"github.com/anchor/chevalier"
 	"io"
 	"io/ioutil"
 	"log"
 	"os"
+	"strings"
 )
 
 func main() {

@@ -4,11 +4,15 @@ import (
 	"github.com/mattbaird/elastigo/api"
 	es "github.com/mattbaird/elastigo/core"
 	"github.com/mattbaird/elastigo/search"
+	"time"
+	"log"
 )
 
 type QueryEngine struct {
 	indexName string
 	dataType  string
+	nSources int
+	updateInterval time.Duration
 }
 
 func NewQueryEngine(host, indexName, dataType string) *QueryEngine {
@@ -16,6 +20,9 @@ func NewQueryEngine(host, indexName, dataType string) *QueryEngine {
 	e.indexName = indexName
 	e.dataType = dataType
 	api.Domain = host
+	e.updateSourceCount()
+	e.updateInterval = time.Second * 10
+	go e.updateForever()
 	return e
 }
 
@@ -38,7 +45,6 @@ func (e *QueryEngine) BuildQuery(req *SourceRequest) SourceQuery {
 		tagQueries[i] = e.buildTagQuery(tag)
 	}
 	query := map[string]interface{}{
-		"size": 100000,
 		"query": map[string]interface{}{
 			"bool": map[string]interface{}{
 				"must": tagQueries,
@@ -60,4 +66,20 @@ func FmtResult(result *es.SearchResult) []string {
 		results[i] = string(hit.Source[:])
 	}
 	return results
+}
+
+func (e *QueryEngine) updateSourceCount() error {
+	resp, err := es.Count(false, e.indexName, e.dataType)
+	e.nSources = resp.Count
+	return err
+}
+
+func (e *QueryEngine) updateForever() {
+	for true {
+		time.Sleep(e.updateInterval)
+		err := e.updateSourceCount()
+		if err != nil {
+			log.Printf("Error updating source count: %v", err)
+		}
+	}
 }

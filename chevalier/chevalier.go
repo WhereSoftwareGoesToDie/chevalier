@@ -5,6 +5,7 @@ import (
 	"flag"
 	zmq "github.com/pebbe/zmq4"
 	"github.com/anchor/picolog"
+	"github.com/anchor/chevalier"
 	"os"
 	"log/syslog"
 )
@@ -12,9 +13,14 @@ import (
 var Logger *picolog.Logger
 
 func handleRequest(sock *zmq.Socket) error {
-	msg, err := sock.RecvMessageBytes(0)
-	Logger.Debugf("Got a request! %v.", msg)
-	return err
+	msg, err := sock.RecvBytes(0)
+	Logger.Debugf("Got a request!")
+	req, err := chevalier.UnmarshalSourceRequest(msg)
+	if err != nil {
+		Logger.Warningf("Failed to unmarshal request: %v", err)
+	}
+	Logger.Debugf("%v", req)
+	return nil
 }
 
 func main() {

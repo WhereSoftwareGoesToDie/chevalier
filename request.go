@@ -19,8 +19,14 @@ func NewSourceRequest(tags []*SourceRequest_Tag) *SourceRequest {
 	return req
 }
 
+func MarshalSourceRequest(req *SourceRequest) ([]byte, error) {
+	marshalled, err := proto.Marshal(req)
+	return marshalled, err
+}
+
 func UnmarshalSourceRequest(packet []byte) (*SourceRequest, error) {
 	source := new(SourceRequest)
 	err := proto.Unmarshal(packet, source)
 	return source, err
 }
+

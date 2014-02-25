@@ -4,9 +4,9 @@ import (
 	"flag"
 	"fmt"
 	"github.com/anchor/chevalier"
+	zmq "github.com/pebbe/zmq4"
 	"io"
 	"io/ioutil"
-	zmq "github.com/pebbe/zmq4"
 	"log"
 	"os"
 	"strings"
@@ -47,7 +47,6 @@ func queryChevalier(req *chevalier.SourceRequest, endpoint string) {
 	}
 	fmt.Println(response)
 }
-
 
 func main() {
 	esHost := flag.String("host", "localhost", "Elasticsearch host to connect to")

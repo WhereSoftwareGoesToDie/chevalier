@@ -29,4 +29,3 @@ func UnmarshalSourceRequest(packet []byte) (*SourceRequest, error) {
 	err := proto.Unmarshal(packet, source)
 	return source, err
 }
-

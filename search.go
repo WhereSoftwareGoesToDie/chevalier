@@ -4,14 +4,14 @@ import (
 	"github.com/mattbaird/elastigo/api"
 	es "github.com/mattbaird/elastigo/core"
 	"github.com/mattbaird/elastigo/search"
-	"time"
 	"log"
+	"time"
 )
 
 type QueryEngine struct {
-	indexName string
-	dataType  string
-	nSources int
+	indexName      string
+	dataType       string
+	nSources       int
 	updateInterval time.Duration
 }
 

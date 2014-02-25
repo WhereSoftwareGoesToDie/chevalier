@@ -3,6 +3,7 @@ package main
 import (
 	"code.google.com/p/gcfg"
 	"flag"
+	"time"
 	zmq "github.com/pebbe/zmq4"
 	"github.com/anchor/picolog"
 	"github.com/anchor/chevalier"
@@ -50,7 +51,7 @@ func main() {
 	engine := chevalier.NewQueryEngine(cfg.Elasticsearch.Host, cfg.Elasticsearch.Index, cfg.Elasticsearch.DataType)
 	reactor := zmq.NewReactor()
 	reactor.AddSocket(sock, zmq.POLLIN, func(e zmq.State) error { return handleRequest(sock, engine) })
-	err = reactor.Run(-1)
+	err = reactor.Run(time.Millisecond)
 	if err != nil {
 		Logger.Errorf("%v", err)
 	}

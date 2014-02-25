@@ -1,3 +1,14 @@
 [chevalier]
+# Address to listen for requests on. This is a ZeroMQ URI.
 listenaddress = "tcp://*:6283"
-elasticsearchendpoint = "localhost"
+
+[elasticsearch]
+# Assumes port 9200.
+host = "localhost"
+
+[vaultaire]
+# FIXME: get actual port numbers
+# Endpoint for a full read.
+readendpoint = "tcp://127.0.0.1:5562"
+# Endpoint for streaming updates.
+updateendpoint = "tcp://127.0.0.1:5563"

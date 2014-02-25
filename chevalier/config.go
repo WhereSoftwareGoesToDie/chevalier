@@ -2,13 +2,17 @@ package main
 
 type Config struct {
 	Chevalier struct {
-		// Just the hostname, not the port.
-		ElasticsearchHost string
 		// ZMQ URI to listen on.
 		ListenAddress string
+	}
+	Elasticsearch struct {
+		// Just the hostname, not the port.
+		Host string
+	}
+	Vaultaire struct {
 		// Vaultaire full read endpoint
-		VaultaireReadEndpoint string
+		ReadEndpoint string
 		// Vaultaire update endpoint
-		VaultaireUpdateEndpoint string
+		UpdateEndpoint string
 	}
 }

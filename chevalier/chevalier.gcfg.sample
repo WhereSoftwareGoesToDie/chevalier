@@ -5,6 +5,8 @@ listenaddress = "tcp://*:6283"
 [elasticsearch]
 # Assumes port 9200.
 host = "localhost"
+index = "chevalier"
+datatype = "datasource"
 
 [vaultaire]
 # FIXME: get actual port numbers

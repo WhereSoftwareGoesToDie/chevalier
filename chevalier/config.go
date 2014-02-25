@@ -8,6 +8,8 @@ type Config struct {
 	Elasticsearch struct {
 		// Just the hostname, not the port.
 		Host string
+		Index string
+		DataType string
 	}
 	Vaultaire struct {
 		// Vaultaire full read endpoint

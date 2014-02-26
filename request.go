@@ -4,6 +4,8 @@ import (
 	"code.google.com/p/goprotobuf/proto"
 )
 
+// NewSourceRequestTag builds a SourceRequest_Tag from a field and a
+// value.
 func NewSourceRequestTag(field, value string) *SourceRequest_Tag {
 	tag := new(SourceRequest_Tag)
 	f := field
@@ -13,6 +15,7 @@ func NewSourceRequestTag(field, value string) *SourceRequest_Tag {
 	return tag
 }
 
+// NewSourceRequest builds a SourceRequest from a slice of tags.
 func NewSourceRequest(tags []*SourceRequest_Tag) *SourceRequest {
 	req := new(SourceRequest)
 	req.Tags = tags

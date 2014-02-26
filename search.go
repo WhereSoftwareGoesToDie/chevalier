@@ -2,14 +2,14 @@ package chevalier
 
 import (
 	"encoding/json"
+	"errors"
+	"fmt"
 	"github.com/mattbaird/elastigo/api"
 	es "github.com/mattbaird/elastigo/core"
 	"github.com/mattbaird/elastigo/search"
 	"log"
-	"fmt"
 	"strings"
 	"time"
-	"errors"
 )
 
 // QueryEngine presents an interface for running queries for sources
@@ -106,7 +106,7 @@ func (e *QueryEngine) getResultCount(req *SourceRequest) int64 {
 
 // BuildQuery takes a SourceRequest and turns it into a multi-level
 // map suitable for marshalling to JSON and sending to Elasticsearch.
-func (e *QueryEngine) BuildQuery(req *SourceRequest) (SourceQuery,error) {
+func (e *QueryEngine) BuildQuery(req *SourceRequest) (SourceQuery, error) {
 	_ = search.Search(e.indexName).Type(e.dataType)
 	tags := req.GetTags()
 	tagQueries := make([]*search.QueryDsl, 0)
@@ -147,7 +147,7 @@ func (e *QueryEngine) runSourceRequest(req *SourceRequest) (*es.SearchResult, er
 // GetSources takes a request object and returns the DataSourceBurst of
 // the sources it gets back from Elasticsearch. If error is not nil,
 // then a valid DataSourceBurst will still be returned, with the Error
-// field set. 
+// field set.
 func (e *QueryEngine) GetSources(req *SourceRequest) (*DataSourceBurst, error) {
 	res, err := e.runSourceRequest(req)
 	if err != nil {

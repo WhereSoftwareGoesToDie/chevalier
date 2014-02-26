@@ -30,6 +30,7 @@ func genTestTags() []*SourceRequest_Tag {
 	return tags
 }
 
+// GenTestSourceRequest returns a SourceRequest filled with random data.
 func GenTestSourceRequest() *SourceRequest {
 	rand.Seed(time.Now().UTC().UnixNano())
 	tags := genTestTags()

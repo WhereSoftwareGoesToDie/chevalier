@@ -38,6 +38,9 @@ func NewElasticsearchSource(source *DataSource) *ElasticsearchSource {
 	return esSource
 }
 
+// Unmarshal turns an ElasticsearchSource (presumably itself unmarshaled
+// from a JSON object stored in Elasticsearch) into the equivalent
+// DataSource.
 func (s *ElasticsearchSource) Unmarshal() *DataSource {
 	tags := make([]*DataSource_Tag, len(s.Source))
 	idx := 0
@@ -49,6 +52,7 @@ func (s *ElasticsearchSource) Unmarshal() *DataSource {
 	return pb
 }
 
+// ElasticsearchWriter maintains context for writes to the index.
 type ElasticsearchWriter struct {
 	indexer   *es.BulkIndexer
 	indexName string
@@ -56,6 +60,9 @@ type ElasticsearchWriter struct {
 	done      chan bool
 }
 
+// NewElasticsearchWriter builds a new Writer. retrySeconds is for the
+// bulk indexer. index and dataType can be anything as long as they're
+// consistent.
 func NewElasticsearchWriter(host string, maxConns int, retrySeconds int, index, dataType string) *ElasticsearchWriter {
 	writer := new(ElasticsearchWriter)
 	api.Domain = host
@@ -67,16 +74,20 @@ func NewElasticsearchWriter(host string, maxConns int, retrySeconds int, index, 
 	return writer
 }
 
+// Write queues a DataSource for writing by the bulk indexer.
+// Non-blocking.
 func (w *ElasticsearchWriter) Write(source *DataSource) error {
 	esSource := NewElasticsearchSource(source)
 	err := w.indexer.Index(w.indexName, w.dataType, esSource.GetID(), "", nil, esSource)
 	return err
 }
 
+// Shutdown signals the bulk indexer to flush all pending writes.
 func (w *ElasticsearchWriter) Shutdown() {
 	w.done <- true
 }
 
+// GetErrorChan returns the channel the bulk indexer writes errors to.
 func (w *ElasticsearchWriter) GetErrorChan() chan *es.ErrorBuffer {
 	return w.indexer.ErrorChannel
 }

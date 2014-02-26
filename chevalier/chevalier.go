@@ -8,7 +8,6 @@ import (
 	zmq "github.com/pebbe/zmq4"
 	"log/syslog"
 	"os"
-	"time"
 )
 
 var Logger *picolog.Logger
@@ -57,7 +56,7 @@ func main() {
 	engine := chevalier.NewQueryEngine(cfg.Elasticsearch.Host, cfg.Elasticsearch.Index, cfg.Elasticsearch.DataType)
 	reactor := zmq.NewReactor()
 	reactor.AddSocket(sock, zmq.POLLIN, func(e zmq.State) error { return handleRequest(sock, engine) })
-	err = reactor.Run(time.Millisecond)
+	err = reactor.Run(-1)
 	if err != nil {
 		Logger.Errorf("%v", err)
 	}

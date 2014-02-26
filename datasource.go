@@ -40,3 +40,18 @@ func DataFrameSource(frame *dataframe.DataFrame) *DataSource {
 	}
 	return source
 }
+
+func NewDataSourceTag(field, value string) *DataSource_Tag {
+	tag := new(DataSource_Tag)
+	f := field
+	v := value
+	tag.Field = &f
+	tag.Value = &v
+	return tag
+}
+
+func NewDataSource(tags []*DataSource_Tag) *DataSource {
+	source := new(DataSource)
+	source.Source = tags
+	return source
+}

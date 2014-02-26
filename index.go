@@ -38,6 +38,16 @@ func NewElasticsearchSource(source *DataSource) *ElasticsearchSource {
 	return esSource
 }
 
+func (s *ElasticsearchSource) Unmarshal() *DataSource {
+	tags := make([]*DataSource_Tag, len(s.Source))
+	idx := 0
+	for field, value := range s.Source {
+		tags[idx] = NewDataSourceTag(field, value)
+	}
+	pb := NewDataSource(tags)
+	return pb
+}
+
 type ElasticsearchWriter struct {
 	indexer   *es.BulkIndexer
 	indexName string

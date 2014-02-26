@@ -1,6 +1,7 @@
 package chevalier
 
 import (
+	"encoding/json"
 	"github.com/mattbaird/elastigo/api"
 	es "github.com/mattbaird/elastigo/core"
 	"github.com/mattbaird/elastigo/search"
@@ -54,10 +55,27 @@ func (e *QueryEngine) BuildQuery(req *SourceRequest) SourceQuery {
 	return SourceQuery(query)
 }
 
-func (e *QueryEngine) RunSourceRequest(req *SourceRequest) (*es.SearchResult, error) {
+func (e *QueryEngine) runSourceRequest(req *SourceRequest) (*es.SearchResult, error) {
 	q := e.BuildQuery(req)
 	res, err := es.SearchRequest(false, e.indexName, e.dataType, q, "", 0)
 	return &res, err
+}
+
+func (e *QueryEngine) GetSources(req *SourceRequest) (*DataSourceBurst, error) {
+	res, err := e.runSourceRequest(req)
+	if err != nil {
+		return nil, err
+	}
+	sources := make([]*DataSource, len(res.Hits.Hits))
+	for i, hit := range res.Hits.Hits {
+		sources[i] = new(DataSource)
+		err = json.Unmarshal(hit.Source, sources[i])
+		if err != nil {
+			return nil, err
+		}
+	}
+	burst := BuildSourceBurst(sources)
+	return burst, nil
 }
 
 func FmtResult(result *es.SearchResult) []string {

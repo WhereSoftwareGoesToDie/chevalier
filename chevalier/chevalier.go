@@ -3,12 +3,12 @@ package main
 import (
 	"code.google.com/p/gcfg"
 	"flag"
-	"time"
-	zmq "github.com/pebbe/zmq4"
-	"github.com/anchor/picolog"
 	"github.com/anchor/chevalier"
-	"os"
+	"github.com/anchor/picolog"
+	zmq "github.com/pebbe/zmq4"
 	"log/syslog"
+	"os"
+	"time"
 )
 
 var Logger *picolog.Logger
@@ -21,13 +21,20 @@ func handleRequest(sock *zmq.Socket, engine *chevalier.QueryEngine) error {
 		Logger.Warningf("Failed to unmarshal request: %v", err)
 	}
 	Logger.Debugf("%v", req)
-	results, err := engine.RunSourceRequest(req)
+	results, err := engine.GetSources(req)
 	if err != nil {
 		Logger.Errorf("Error querying Elasticsearch: %v", err)
 		return nil
 	}
-	sources := chevalier.FmtResult(results)
-	Logger.Debugf("Got result: %v", sources)
+	Logger.Debugf("Got result: %v", results)
+	reply, err := chevalier.MarshalSourceBurst(results)
+	if err != nil {
+		Logger.Errorf("Error marshalling reply: %v", err)
+	}
+	_, err = sock.SendBytes(reply, 0)
+	if err != nil {
+		Logger.Errorf("Error sending response: %v", err)
+	}
 	return nil
 }
 

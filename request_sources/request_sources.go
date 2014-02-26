@@ -14,15 +14,14 @@ import (
 
 func queryES(req *chevalier.SourceRequest, host string) {
 	engine := chevalier.NewQueryEngine(host, "chevalier", "datasource")
-	results, err := engine.RunSourceRequest(req)
+	results, err := engine.GetSources(req)
 	if err != nil {
 		log.Println("Search error: %v", err)
 	}
-	sources := chevalier.FmtResult(results)
 	if err != nil {
 		log.Fatal(err)
 	}
-	for _, source := range sources {
+	for _, source := range results.GetSources() {
 		fmt.Println(source)
 	}
 }
@@ -41,11 +40,17 @@ func queryChevalier(req *chevalier.SourceRequest, endpoint string) {
 		log.Fatal(err)
 	}
 	_, err = sock.SendBytes(packet, 0)
-	response, err := sock.RecvMessageBytes(0)
+	response, err := sock.RecvBytes(0)
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println(response)
+	burst, err := chevalier.UnmarshalSourceBurst(response)
+	if err != nil {
+		log.Fatal(err)
+	}
+	for _, source := range burst.GetSources() {
+		fmt.Println(source)
+	}
 }
 
 func main() {

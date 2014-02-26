@@ -11,6 +11,8 @@ import (
 	"time"
 )
 
+// QueryEngine presents an interface for running queries for sources
+// against Elasticsearch.
 type QueryEngine struct {
 	indexName      string
 	dataType       string
@@ -18,6 +20,9 @@ type QueryEngine struct {
 	updateInterval time.Duration
 }
 
+// NewQueryEngine initializes a QueryEngine with the supplied
+// Elasticsearch metadata. indexName and dataType can be anything as
+// long as they're consistent.
 func NewQueryEngine(host, indexName, dataType string) *QueryEngine {
 	e := new(QueryEngine)
 	e.indexName = indexName
@@ -29,6 +34,11 @@ func NewQueryEngine(host, indexName, dataType string) *QueryEngine {
 	return e
 }
 
+// sanitizeField takes an input field specifier (from a
+// SourceRequest_Tag) and munges it so Elasticsearch likes it more. In
+// particular, it makes single-wildcard queries work correctly.
+//
+// FIXME: mid-field wildcards still aren't working.
 func (e *QueryEngine) sanitizeField(f string) string {
 	f = strings.TrimSpace(f)
 	if f == "*" {
@@ -40,6 +50,11 @@ func (e *QueryEngine) sanitizeField(f string) string {
 	return f
 }
 
+// buildTagQuery constructs an elastigo query object (search.QueryDsl)
+// from a SourceRequest_Tag, designed to be plugged into a
+// query-string-type[0] query later on.
+//
+// [0]: http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/query-dsl-query-string-query.html
 func (e *QueryEngine) buildTagQuery(tag *SourceRequest_Tag) *search.QueryDsl {
 	qs := new(search.QueryString)
 	qs.Fields = make([]string, 0)
@@ -51,6 +66,8 @@ func (e *QueryEngine) buildTagQuery(tag *SourceRequest_Tag) *search.QueryDsl {
 
 type SourceQuery map[string]interface{}
 
+// BuildQuery takes a SourceRequest and turns it into a multi-level
+// map suitable for marshalling to JSON and sending to Elasticsearch.
 func (e *QueryEngine) BuildQuery(req *SourceRequest) SourceQuery {
 	_ = search.Search(e.indexName).Type(e.dataType)
 	tags := req.GetTags()
@@ -68,12 +85,16 @@ func (e *QueryEngine) BuildQuery(req *SourceRequest) SourceQuery {
 	return SourceQuery(query)
 }
 
+// runSourceRequest takes a request object and returns an elastigo-type
+// (i.e., intermediate) result.
 func (e *QueryEngine) runSourceRequest(req *SourceRequest) (*es.SearchResult, error) {
 	q := e.BuildQuery(req)
 	res, err := es.SearchRequest(false, e.indexName, e.dataType, q, "", 0)
 	return &res, err
 }
 
+// GetSources takes a request object and returns the DataSourceBurst of
+// the sources it gets back from Elasticsearch.
 func (e *QueryEngine) GetSources(req *SourceRequest) (*DataSourceBurst, error) {
 	res, err := e.runSourceRequest(req)
 	if err != nil {
@@ -92,6 +113,8 @@ func (e *QueryEngine) GetSources(req *SourceRequest) (*DataSourceBurst, error) {
 	return burst, nil
 }
 
+// FmtResult returns a string from a SearchResult by interpreting it in
+// the most naive manner possible. For debugging.
 func FmtResult(result *es.SearchResult) []string {
 	results := make([]string, len(result.Hits.Hits))
 	for i, hit := range result.Hits.Hits {
@@ -100,12 +123,15 @@ func FmtResult(result *es.SearchResult) []string {
 	return results
 }
 
+// updateSourceCount updates our running total of documents-in-index
+// (by asking Elasticsearch).
 func (e *QueryEngine) updateSourceCount() error {
 	resp, err := es.Count(false, e.indexName, e.dataType)
 	e.nSources = resp.Count
 	return err
 }
 
+// updateForever updates the source counter on a regular basis.
 func (e *QueryEngine) updateForever() {
 	for true {
 		time.Sleep(e.updateInterval)

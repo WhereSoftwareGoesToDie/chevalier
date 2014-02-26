@@ -55,7 +55,7 @@ func (e *QueryEngine) sanitizeTag(field, value string) (string, string) {
 	// Also, this can be made a lot faster.
 	reservedChars := `+ - && || ! ( ) { } [ ] ^ " ~ ? : \ /`
 	for _, char := range strings.Split(reservedChars, " ") {
-		escapedChar := fmt.Sprintf(field, "\\%s", char)
+		escapedChar := fmt.Sprintf("\\%s", char)
 		field = strings.Replace(field, char, escapedChar, -1)
 		value = strings.Replace(value, char, escapedChar, -1)
 	}

@@ -1,10 +1,9 @@
 package chevalier;
 
-// This is a dummy protobuf for testing purposes; the actual update
-// interface hasn't yet been defined.
-
+// Returned as a response to the chevalier client.
 message DataSourceBurst {
         repeated DataSource sources = 1;
+        optional string error = 2;
 }
 
 message DataSource {

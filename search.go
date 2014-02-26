@@ -45,9 +45,21 @@ func (e *QueryEngine) sanitizeField(f string) string {
 		return fmt.Sprintf("%s._all", e.dataType)
 	}
 	f = fmt.Sprintf("%s.%s", e.dataType, f)
-	// Need to escape wildcards here for some reason. 
-	f = strings.Replace(f, "*", "\\*", -1)
 	return f
+}
+
+func (e *QueryEngine) sanitizeTag(field, value string) (string, string) {
+	// * is normally in this list, but is not included here because
+	// we want it to act as a wildcard.
+	// Also, this can be made a lot faster.
+	reservedChars := `+ - && || ! ( ) { } [ ] ^ " ~ ? : \ /`
+	for _, char := range strings.Split(reservedChars, " ") {
+		escapedChar := fmt.Sprintf(field, "\\%s", char)
+		field = strings.Replace(field, char, escapedChar, -1)
+		value = strings.Replace(value, char, escapedChar, -1)
+	}
+	field = e.sanitizeField(field)
+	return field, value
 }
 
 // buildTagQuery constructs an elastigo query object (search.QueryDsl)
@@ -56,10 +68,11 @@ func (e *QueryEngine) sanitizeField(f string) string {
 //
 // [0]: http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/query-dsl-query-string-query.html
 func (e *QueryEngine) buildTagQuery(tag *SourceRequest_Tag) *search.QueryDsl {
+	field, value := e.sanitizeTag(*tag.Field, *tag.Value)
 	qs := new(search.QueryString)
 	qs.Fields = make([]string, 0)
-	qs.Fields = append(qs.Fields, e.sanitizeField(*tag.Field))
-	qs.Query = *tag.Value
+	qs.Fields = append(qs.Fields, field)
+	qs.Query = value
 	q := search.Query().Qs(qs)
 	return q
 }

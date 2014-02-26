@@ -57,6 +57,8 @@ func main() {
 	esHost := flag.String("host", "localhost", "Elasticsearch host to connect to")
 	protobuf := flag.Bool("protobuf", false, "Read a SourceRequest from stdin rather than accepting field:value pairs on the command line.")
 	es := flag.Bool("es", false, "Read from Elasticsearch directly rather than chevalier.")
+	startPage := flag.Int("start-page", 0, "Obtain results from this page.")
+	pageSize := flag.Int("page-size", 0, "Number of results per page.")
 	endpoint := flag.String("endpoint", "tcp://127.0.0.1:6283", "Chevalier endpoint (as a ZMQ URI).")
 	flag.Parse()
 	var req *chevalier.SourceRequest
@@ -80,6 +82,14 @@ func main() {
 			tags[i] = chevalier.NewSourceRequestTag(pair[0], pair[1])
 		}
 		req = chevalier.NewSourceRequest(tags)
+		if *startPage > 0 {
+			page := int64(*startPage)
+			req.StartPage = &page
+		}
+		if *pageSize > 0 {
+			size := int64(*pageSize)
+			req.SourcesPerPage = &size
+		}
 	}
 	if *es {
 		queryES(req, *esHost)

@@ -16,7 +16,7 @@ import (
 type QueryEngine struct {
 	indexName      string
 	dataType       string
-	nSources       int
+	nSources       int64
 	updateInterval time.Duration
 }
 
@@ -64,7 +64,27 @@ func (e *QueryEngine) buildTagQuery(tag *SourceRequest_Tag) *search.QueryDsl {
 	return q
 }
 
+// SourceQuery is a multi-level map type representing an Elasticsearch
+// query-string-type query. Suitable for marshalling as JSON and feeding
+// to Elasticsearch.
 type SourceQuery map[string]interface{}
+
+func (e *QueryEngine) getStartResult(req *SourceRequest) int64 {
+	startPage := req.GetStartPage()
+	pageSize := req.GetSourcesPerPage()
+	if pageSize == 0 {
+		return int64(0)
+	}
+	return startPage * pageSize
+}
+
+func (e *QueryEngine) getResultCount(req *SourceRequest) int64 {
+	pageSize := req.GetSourcesPerPage()
+	if pageSize <= 0 {
+		return e.nSources
+	}
+	return pageSize
+}
 
 // BuildQuery takes a SourceRequest and turns it into a multi-level
 // map suitable for marshalling to JSON and sending to Elasticsearch.
@@ -75,12 +95,16 @@ func (e *QueryEngine) BuildQuery(req *SourceRequest) SourceQuery {
 	for i, tag := range tags {
 		tagQueries[i] = e.buildTagQuery(tag)
 	}
+	fromResult := e.getStartResult(req)
+	resultCount := e.getResultCount(req)
 	query := map[string]interface{}{
 		"query": map[string]interface{}{
 			"bool": map[string]interface{}{
 				"must": tagQueries,
 			},
 		},
+		"from": fromResult,
+		"size": resultCount,
 	}
 	return SourceQuery(query)
 }
@@ -127,7 +151,7 @@ func FmtResult(result *es.SearchResult) []string {
 // (by asking Elasticsearch).
 func (e *QueryEngine) updateSourceCount() error {
 	resp, err := es.Count(false, e.indexName, e.dataType)
-	e.nSources = resp.Count
+	e.nSources = int64(resp.Count)
 	return err
 }
 

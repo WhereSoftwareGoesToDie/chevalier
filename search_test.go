@@ -15,7 +15,7 @@ func TestBuildQuery(t *testing.T) {
 	if err != nil {
 		t.Errorf("%v", err)
 	}
-	expected := `{"query":{"bool":{"must":[{"query_string":{"query":"*.example.com","fields":["hostname"]}},{"query_string":{"query":"cpu","fields":["metric"]}}]}}}`
+	expected := `{"from":0,"query":{"bool":{"must":[{"query_string":{"query":"*.example.com","fields":["datasource.hostname"]}},{"query_string":{"query":"cpu","fields":["datasource.metric"]}}]}},"size":0}`
 	result := string(json[:])
 	if result != expected {
 		t.Errorf("Query marshalling mismatch: expected %v, got %v.", expected, result)

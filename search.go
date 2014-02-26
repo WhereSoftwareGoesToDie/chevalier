@@ -145,18 +145,26 @@ func (e *QueryEngine) runSourceRequest(req *SourceRequest) (*es.SearchResult, er
 }
 
 // GetSources takes a request object and returns the DataSourceBurst of
-// the sources it gets back from Elasticsearch.
+// the sources it gets back from Elasticsearch. If error is not nil,
+// then a valid DataSourceBurst will still be returned, with the Error
+// field set. 
 func (e *QueryEngine) GetSources(req *SourceRequest) (*DataSourceBurst, error) {
 	res, err := e.runSourceRequest(req)
 	if err != nil {
-		return nil, err
+		msg := fmt.Sprintf("Request error: %v", err)
+		burst := new(DataSourceBurst)
+		burst.Error = &msg
+		return burst, err
 	}
 	sources := make([]*DataSource, len(res.Hits.Hits))
 	for i, hit := range res.Hits.Hits {
 		source := new(ElasticsearchSource)
 		err = json.Unmarshal(hit.Source, source)
 		if err != nil {
-			return nil, err
+			msg := fmt.Sprintf("Response decoding error: %v", err)
+			burst := new(DataSourceBurst)
+			burst.Error = &msg
+			return burst, err
 		}
 		sources[i] = source.Unmarshal()
 	}

@@ -24,7 +24,6 @@ func handleRequest(sock *zmq.Socket, engine *chevalier.QueryEngine) error {
 	results, err := engine.GetSources(req)
 	if err != nil {
 		Logger.Errorf("Error querying Elasticsearch: %v", err)
-		return nil
 	}
 	Logger.Debugf("Got result: %v", results)
 	reply, err := chevalier.MarshalSourceBurst(results)

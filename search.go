@@ -68,11 +68,12 @@ func (e *QueryEngine) GetSources(req *SourceRequest) (*DataSourceBurst, error) {
 	}
 	sources := make([]*DataSource, len(res.Hits.Hits))
 	for i, hit := range res.Hits.Hits {
-		sources[i] = new(DataSource)
-		err = json.Unmarshal(hit.Source, sources[i])
+		source := new(ElasticsearchSource)
+		err = json.Unmarshal(hit.Source, source)
 		if err != nil {
 			return nil, err
 		}
+		sources[i] = source.Unmarshal()
 	}
 	burst := BuildSourceBurst(sources)
 	return burst, nil

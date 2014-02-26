@@ -43,6 +43,7 @@ func (s *ElasticsearchSource) Unmarshal() *DataSource {
 	idx := 0
 	for field, value := range s.Source {
 		tags[idx] = NewDataSourceTag(field, value)
+		idx++
 	}
 	pb := NewDataSource(tags)
 	return pb

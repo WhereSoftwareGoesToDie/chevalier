@@ -11,7 +11,11 @@ func TestBuildQuery(t *testing.T) {
 	query.Tags = make([]*SourceRequest_Tag, 2)
 	query.Tags[0] = NewSourceRequestTag("hostname", "*.example.com")
 	query.Tags[1] = NewSourceRequestTag("metric", "cpu")
-	json, err := json.Marshal(engine.BuildQuery(query))
+	q, err := engine.BuildQuery(query)
+	if err != nil {
+		t.Errorf("%v", err)
+	}
+	json, err := json.Marshal(q)
 	if err != nil {
 		t.Errorf("%v", err)
 	}

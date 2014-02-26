@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"strings"
 	"time"
+	"errors"
 )
 
 // QueryEngine presents an interface for running queries for sources
@@ -64,17 +65,21 @@ func (e *QueryEngine) sanitizeTag(field, value string) (string, string) {
 
 // buildTagQuery constructs an elastigo query object (search.QueryDsl)
 // from a SourceRequest_Tag, designed to be plugged into a
-// query-string-type[0] query later on.
+// query-string-type[0] query later on. Returns error on empty query.
 //
 // [0]: http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/query-dsl-query-string-query.html
-func (e *QueryEngine) buildTagQuery(tag *SourceRequest_Tag) *search.QueryDsl {
+func (e *QueryEngine) buildTagQuery(tag *SourceRequest_Tag) (*search.QueryDsl, error) {
 	field, value := e.sanitizeTag(*tag.Field, *tag.Value)
+	// Don't bother running empty queries.
+	if value == "" {
+		return nil, errors.New("empty query string")
+	}
 	qs := new(search.QueryString)
 	qs.Fields = make([]string, 0)
 	qs.Fields = append(qs.Fields, field)
 	qs.Query = value
 	q := search.Query().Qs(qs)
-	return q
+	return q, nil
 }
 
 // SourceQuery is a multi-level map type representing an Elasticsearch
@@ -101,12 +106,18 @@ func (e *QueryEngine) getResultCount(req *SourceRequest) int64 {
 
 // BuildQuery takes a SourceRequest and turns it into a multi-level
 // map suitable for marshalling to JSON and sending to Elasticsearch.
-func (e *QueryEngine) BuildQuery(req *SourceRequest) SourceQuery {
+func (e *QueryEngine) BuildQuery(req *SourceRequest) (SourceQuery,error) {
 	_ = search.Search(e.indexName).Type(e.dataType)
 	tags := req.GetTags()
-	tagQueries := make([]*search.QueryDsl, len(tags))
-	for i, tag := range tags {
-		tagQueries[i] = e.buildTagQuery(tag)
+	tagQueries := make([]*search.QueryDsl, 0)
+	for _, tag := range tags {
+		q, err := e.buildTagQuery(tag)
+		if q != nil && err == nil {
+			tagQueries = append(tagQueries, q)
+		}
+	}
+	if len(tagQueries) == 0 {
+		return nil, errors.New("No valid query strings found.")
 	}
 	fromResult := e.getStartResult(req)
 	resultCount := e.getResultCount(req)
@@ -119,13 +130,16 @@ func (e *QueryEngine) BuildQuery(req *SourceRequest) SourceQuery {
 		"from": fromResult,
 		"size": resultCount,
 	}
-	return SourceQuery(query)
+	return SourceQuery(query), nil
 }
 
 // runSourceRequest takes a request object and returns an elastigo-type
 // (i.e., intermediate) result.
 func (e *QueryEngine) runSourceRequest(req *SourceRequest) (*es.SearchResult, error) {
-	q := e.BuildQuery(req)
+	q, err := e.BuildQuery(req)
+	if err != nil {
+		return nil, err
+	}
 	res, err := es.SearchRequest(false, e.indexName, e.dataType, q, "", 0)
 	return &res, err
 }

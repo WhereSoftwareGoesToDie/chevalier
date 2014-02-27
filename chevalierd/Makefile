@@ -10,4 +10,3 @@ check:
 	go test
 
 .PHONY : all
-.PHONY : protobuf

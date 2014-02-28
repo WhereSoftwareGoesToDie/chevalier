@@ -32,6 +32,7 @@ func handleRequest(sock *zmq.Socket, engine *chevalier.QueryEngine) error {
 }
 
 func runReader(cfg Config) {
+	Logger.Infof("Starting chevalierd %v in reader mode.", Version)
 	sock, err := zmq.NewSocket(zmq.REP)
 	if err != nil {
 		Logger.Fatalf("Could not initialize listen socket: %v", err)

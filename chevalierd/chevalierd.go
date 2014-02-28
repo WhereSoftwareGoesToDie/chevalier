@@ -8,6 +8,10 @@ import (
 	"flag"
 )
 
+const (
+	Version = "0.0.1"
+)
+
 var Logger *picolog.Logger
 
 func main() {

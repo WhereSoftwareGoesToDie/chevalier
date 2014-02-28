@@ -32,5 +32,6 @@ func subscribeUpdate(endpoint string) error {
 }
 
 func runIndexer(cfg Config) {
+	Logger.Infof("Starting chevalierd %v in indexer mode.", Version)
 	go fullUpdate(cfg.Vaultaire.ReadEndpoint)
 }

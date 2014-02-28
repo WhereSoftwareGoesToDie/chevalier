@@ -3,36 +3,40 @@ package main
 import (
 	"github.com/anchor/chevalier"
 	zmq "github.com/pebbe/zmq4"
+	"github.com/anchor/picolog"
 )
+
+var ReaderLogger *picolog.Logger
 
 func handleRequest(sock *zmq.Socket, engine *chevalier.QueryEngine) error {
 	msg, err := sock.RecvBytes(0)
-	Logger.Debugf("Got a request!")
+	ReaderLogger.Debugf("Got a request!")
 	req, err := chevalier.UnmarshalSourceRequest(msg)
 	if err != nil {
 		Logger.Warningf("Failed to unmarshal request: %v", err)
 		return err
 	}
-	Logger.Debugf("%v", req)
+	ReaderLogger.Debugf("%v", req)
 	results, err := engine.GetSources(req)
 	if err != nil {
-		Logger.Errorf("Error querying Elasticsearch: %v", err)
+		ReaderLogger.Errorf("Error querying Elasticsearch: %v", err)
 		return err
 	}
-	Logger.Debugf("Got result: %v", results)
+	ReaderLogger.Debugf("Got result: %v", results)
 	reply, err := chevalier.MarshalSourceBurst(results)
 	if err != nil {
-		Logger.Errorf("Error marshalling reply: %v", err)
+		ReaderLogger.Errorf("Error marshalling reply: %v", err)
 	}
 	_, err = sock.SendBytes(reply, 0)
 	if err != nil {
-		Logger.Errorf("Error sending response: %v", err)
+		ReaderLogger.Errorf("Error sending response: %v", err)
 	}
 	return nil
 }
 
 func runReader(cfg Config) {
 	Logger.Infof("Starting chevalierd %v in reader mode.", Version)
+	ReaderLogger = Logger.NewSubLogger("reader")
 	sock, err := zmq.NewSocket(zmq.REP)
 	if err != nil {
 		Logger.Fatalf("Could not initialize listen socket: %v", err)
@@ -47,7 +51,7 @@ func runReader(cfg Config) {
 	for {
 		err = reactor.Run(-1)
 		if err != nil {
-			Logger.Errorf("Restarting reactor: %v", err)
+			ReaderLogger.Errorf("Restarting reactor: %v", err)
 		}
 	}
 }

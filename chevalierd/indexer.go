@@ -3,7 +3,10 @@ package main
 import (
 	zmq "github.com/pebbe/zmq4"
 	_ "github.com/anchor/chevalier"
+	"github.com/anchor/picolog"
 )
+
+var IndexerLogger *picolog.Logger
 
 func fullUpdate(endpoint string) error {
 	sock, err := zmq.NewSocket(zmq.REQ)
@@ -33,5 +36,6 @@ func subscribeUpdate(endpoint string) error {
 
 func runIndexer(cfg Config) {
 	Logger.Infof("Starting chevalierd %v in indexer mode.", Version)
+	IndexerLogger = Logger.NewSubLogger("indexer")
 	go fullUpdate(cfg.Vaultaire.ReadEndpoint)
 }

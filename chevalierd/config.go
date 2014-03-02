@@ -4,6 +4,8 @@ type Config struct {
 	Chevalier struct {
 		// ZMQ URI to listen on.
 		ListenAddress string
+		// Log level (info, debug, et cetera)
+		LogLevel string
 	}
 	Elasticsearch struct {
 		// Just the hostname, not the port.

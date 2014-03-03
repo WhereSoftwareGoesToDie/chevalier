@@ -25,3 +25,25 @@ func TestBuildQuery(t *testing.T) {
 		t.Errorf("Query marshalling mismatch: expected %v, got %v.", expected, result)
 	}
 }
+
+func TestSanitizeTag(t *testing.T) {
+	var tagTests = []struct {
+		k string
+		v string
+		outK string
+		outV string
+	}{
+		{"*", "*", "datasource._all", "*"},
+		{"host*", "[test*]^~", "datasource.host*", `\[test*\]\^\~`},
+	}
+	engine := NewQueryEngine("localhost", "chevalier_test", "datasource")
+	failIfInvalid := func(f, v, wantF, wantV string) {
+		resF, resV := engine.sanitizeTag(f, v)
+		if resF != wantF || resV != wantV {
+			t.Errorf("Got %v and %v, wanted %v and %v", resF, resV, wantF, wantV)
+		}
+	}
+	for _, tt := range tagTests {
+		failIfInvalid(tt.k, tt.v, tt.outK, tt.outV)
+	}
+}

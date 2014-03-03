@@ -53,9 +53,9 @@ func (e *QueryEngine) sanitizeTag(field, value string) (string, string) {
 	// * is normally in this list, but is not included here because
 	// we want it to act as a wildcard.
 	// Also, this can be made a lot faster.
-	reservedChars := `+ - && || ! ( ) { } [ ] ^ " ~ ? : \ /`
+	reservedChars := `\ + - && || ! ( ) { } [ ] ^ " ~ ? : /`
 	for _, char := range strings.Split(reservedChars, " ") {
-		escapedChar := fmt.Sprintf("\\%s", char)
+		escapedChar := fmt.Sprintf(`\%s`, char)
 		field = strings.Replace(field, char, escapedChar, -1)
 		value = strings.Replace(value, char, escapedChar, -1)
 	}

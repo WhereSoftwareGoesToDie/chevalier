@@ -2,7 +2,7 @@ package chevalier;
 
 // obtained as a response from Vaultaire's readerd.
 message DataSourceResponseBurst {
-        repeated DataSource sources = 1;
+        repeated DataSourceResponse sources = 1;
         optional string error = 2;
 }
 

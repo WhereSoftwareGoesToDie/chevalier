@@ -12,6 +12,6 @@ datatype = "datasource"
 [vaultaire]
 # FIXME: get actual port numbers
 # Endpoint for a full read.
-readendpoint = "tcp://127.0.0.1:5562"
+readendpoint = "tcp://127.0.0.1:5572"
 # Endpoint for streaming updates.
-updateendpoint = "tcp://127.0.0.1:5563"
+updateendpoint = "tcp://127.0.0.1:5574"

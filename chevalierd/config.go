@@ -12,11 +12,14 @@ type Config struct {
 		Host     string
 		Index    string
 		DataType string
+		MaxConns int
+		RetrySeconds int
 	}
 	Vaultaire struct {
 		// Vaultaire full read endpoint
 		ReadEndpoint string
 		// Vaultaire update endpoint
 		UpdateEndpoint string
+		Origins []string
 	}
 }

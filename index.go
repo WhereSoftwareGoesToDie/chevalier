@@ -52,6 +52,15 @@ func (s *ElasticsearchSource) Unmarshal() *DataSource {
 	return pb
 }
 
+func MarshalElasticsearchSources(b *DataSourceBurst) []*ElasticsearchSource {
+	sources := make([]*ElasticsearchSource, len(b.Sources))
+	for i, s := range b.Sources {
+		esSource := NewElasticsearchSource(s)
+		sources[i] = esSource
+	}
+	return sources
+}
+
 // ElasticsearchWriter maintains context for writes to the index.
 type ElasticsearchWriter struct {
 	indexer   *es.BulkIndexer

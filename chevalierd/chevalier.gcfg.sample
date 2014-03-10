@@ -8,6 +8,8 @@ loglevel = info
 host = "localhost"
 index = "chevalier"
 datatype = "datasource"
+maxconns = 4
+retryseconds = 10
 
 [vaultaire]
 # FIXME: get actual port numbers
@@ -15,3 +17,5 @@ datatype = "datasource"
 readendpoint = "tcp://127.0.0.1:5572"
 # Endpoint for streaming updates.
 updateendpoint = "tcp://127.0.0.1:5574"
+# Origins to request from Vaultaire. 
+origins = ABCDEF, FEDCBA

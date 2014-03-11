@@ -10,6 +10,7 @@ import (
 )
 
 type ElasticsearchSource struct {
+	Origin string
 	Source map[string]string `json:"source"`
 }
 
@@ -29,8 +30,9 @@ func (s *ElasticsearchSource) GetID() string {
 	return id
 }
 
-func NewElasticsearchSource(source *DataSource) *ElasticsearchSource {
+func NewElasticsearchSource(origin string, source *DataSource) *ElasticsearchSource {
 	esSource := new(ElasticsearchSource)
+	esSource.Origin = origin
 	esSource.Source = make(map[string]string, 0)
 	for _, tagPtr := range source.Source {
 		esSource.Source[*tagPtr.Field] = *tagPtr.Value
@@ -52,10 +54,10 @@ func (s *ElasticsearchSource) Unmarshal() *DataSource {
 	return pb
 }
 
-func MarshalElasticsearchSources(b *DataSourceBurst) []*ElasticsearchSource {
+func MarshalElasticsearchSources(origin string, b *DataSourceBurst) []*ElasticsearchSource {
 	sources := make([]*ElasticsearchSource, len(b.Sources))
 	for i, s := range b.Sources {
-		esSource := NewElasticsearchSource(s)
+		esSource := NewElasticsearchSource(origin, s)
 		sources[i] = esSource
 	}
 	return sources
@@ -85,8 +87,8 @@ func NewElasticsearchWriter(host string, maxConns int, retrySeconds int, index, 
 
 // Write queues a DataSource for writing by the bulk indexer.
 // Non-blocking.
-func (w *ElasticsearchWriter) Write(source *DataSource) error {
-	esSource := NewElasticsearchSource(source)
+func (w *ElasticsearchWriter) Write(origin string, source *DataSource) error {
+	esSource := NewElasticsearchSource(origin, source)
 	err := w.indexer.Index(w.indexName, w.dataType, esSource.GetID(), "", nil, esSource)
 	return err
 }

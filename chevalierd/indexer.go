@@ -17,7 +17,7 @@ func fullUpdate(w *chevalier.ElasticsearchWriter, endpoint string, origins []str
 			continue
 		}
 		for _, s := range burst.Sources {
-			err = w.Write(s)
+			err = w.Write(o, s)
 			if err != nil {
 				IndexerLogger.Errorf("Could not index source: %v", err)
 			} else {

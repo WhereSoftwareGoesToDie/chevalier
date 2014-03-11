@@ -9,15 +9,17 @@ import (
 var ReaderLogger *picolog.Logger
 
 func handleRequest(sock *zmq.Socket, engine *chevalier.QueryEngine) error {
-	msg, err := sock.RecvBytes(0)
+	msg, err := sock.RecvMessageBytes(0)
+	origin := string(msg[0][:])
+	sourceReq := msg[1]
 	ReaderLogger.Debugf("Got a request!")
-	req, err := chevalier.UnmarshalSourceRequest(msg)
+	req, err := chevalier.UnmarshalSourceRequest(sourceReq)
 	if err != nil {
 		Logger.Warningf("Failed to unmarshal request: %v", err)
 		return err
 	}
 	ReaderLogger.Debugf("%v", req)
-	results, err := engine.GetSources(req)
+	results, err := engine.GetSources(origin, req)
 	if err != nil {
 		ReaderLogger.Errorf("Error querying Elasticsearch: %v", err)
 		return err

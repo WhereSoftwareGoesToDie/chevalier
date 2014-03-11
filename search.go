@@ -82,6 +82,15 @@ func (e *QueryEngine) buildTagQuery(tag *SourceRequest_Tag) (*search.QueryDsl, e
 	return q, nil
 }
 
+func (e *QueryEngine) buildOriginQuery(origin string) (*search.QueryDsl) {
+	qs := new(search.QueryString)
+	qs.Fields = make([]string, 1)
+	qs.Fields[0] = "origin"
+	qs.Query = origin
+	q := search.Query().Qs(qs)
+	return q
+}
+
 // SourceQuery is a multi-level map type representing an Elasticsearch
 // query-string-type query. Suitable for marshalling as JSON and feeding
 // to Elasticsearch.
@@ -106,7 +115,7 @@ func (e *QueryEngine) getResultCount(req *SourceRequest) int64 {
 
 // BuildQuery takes a SourceRequest and turns it into a multi-level
 // map suitable for marshalling to JSON and sending to Elasticsearch.
-func (e *QueryEngine) BuildQuery(req *SourceRequest) (SourceQuery, error) {
+func (e *QueryEngine) BuildQuery(origin string, req *SourceRequest) (SourceQuery, error) {
 	_ = search.Search(e.indexName).Type(e.dataType)
 	tags := req.GetTags()
 	tagQueries := make([]*search.QueryDsl, 0)
@@ -116,6 +125,8 @@ func (e *QueryEngine) BuildQuery(req *SourceRequest) (SourceQuery, error) {
 			tagQueries = append(tagQueries, q)
 		}
 	}
+	originTag := e.buildOriginQuery(origin)
+	tagQueries = append(tagQueries, originTag)
 	if len(tagQueries) == 0 {
 		return nil, errors.New("No valid query strings found.")
 	}
@@ -135,8 +146,8 @@ func (e *QueryEngine) BuildQuery(req *SourceRequest) (SourceQuery, error) {
 
 // runSourceRequest takes a request object and returns an elastigo-type
 // (i.e., intermediate) result.
-func (e *QueryEngine) runSourceRequest(req *SourceRequest) (*es.SearchResult, error) {
-	q, err := e.BuildQuery(req)
+func (e *QueryEngine) runSourceRequest(origin string, req *SourceRequest) (*es.SearchResult, error) {
+	q, err := e.BuildQuery(origin, req)
 	if err != nil {
 		return nil, err
 	}
@@ -148,8 +159,8 @@ func (e *QueryEngine) runSourceRequest(req *SourceRequest) (*es.SearchResult, er
 // the sources it gets back from Elasticsearch. If error is not nil,
 // then a valid DataSourceBurst will still be returned, with the Error
 // field set.
-func (e *QueryEngine) GetSources(req *SourceRequest) (*DataSourceBurst, error) {
-	res, err := e.runSourceRequest(req)
+func (e *QueryEngine) GetSources(origin string, req *SourceRequest) (*DataSourceBurst, error) {
+	res, err := e.runSourceRequest(origin, req)
 	if err != nil {
 		msg := fmt.Sprintf("Request error: %v", err)
 		burst := new(DataSourceBurst)

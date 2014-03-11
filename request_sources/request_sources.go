@@ -12,21 +12,21 @@ import (
 	"strings"
 )
 
-func queryES(req *chevalier.SourceRequest, host string) {
+func queryES(origin string, req *chevalier.SourceRequest, host string) {
 	engine := chevalier.NewQueryEngine(host, "chevalier", "datasource")
-	results, err := engine.GetSources(req)
+	results, err := engine.GetSources(origin, req)
 	if err != nil {
 		log.Println("Search error: %v", err)
 	}
 	if err != nil {
 		log.Fatal(err)
 	}
-	for _, source := range results.GetSources() {
+	for _, source := range results.GetSources(origin, req) {
 		fmt.Println(source)
 	}
 }
 
-func queryChevalier(req *chevalier.SourceRequest, endpoint string) {
+func queryChevalier(origin string, req *chevalier.SourceRequest, endpoint string) {
 	sock, err := zmq.NewSocket(zmq.REQ)
 	if err != nil {
 		log.Fatal(err)
@@ -60,7 +60,17 @@ func main() {
 	startPage := flag.Int("start-page", 0, "Obtain results from this page.")
 	pageSize := flag.Int("page-size", 0, "Number of results per page.")
 	endpoint := flag.String("endpoint", "tcp://127.0.0.1:6283", "Chevalier endpoint (as a ZMQ URI).")
+	flag.Usage = func() {
+		fmt.Fprintf(os.Stderr, "Usage of %s:\n", os.Args[0])
+		fmt.Fprintf(os.Stderr, "%s <origin> [args]\n", os.Args[0])
+		flag.PrintDefaults()
+	}
 	flag.Parse()
+	if flag.NArg() < 1 {
+		flag.Usage()
+		os.Exit(1)
+	}
+	origin := flag.Arg(0)
 	var req *chevalier.SourceRequest
 	if *protobuf {
 		reader := io.Reader(os.Stdin)
@@ -92,8 +102,8 @@ func main() {
 		}
 	}
 	if *es {
-		queryES(req, *esHost)
+		queryES(origin, req, *esHost)
 	} else {
-		queryChevalier(req, *endpoint)
+		queryChevalier(origin, req, *endpoint)
 	}
 }

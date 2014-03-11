@@ -18,4 +18,5 @@ readendpoint = "tcp://127.0.0.1:5572"
 # Endpoint for streaming updates.
 updateendpoint = "tcp://127.0.0.1:5574"
 # Origins to request from Vaultaire. 
-origins = ABCDEF, FEDCBA
+origins = ABCDEF
+origins = FEDCBA

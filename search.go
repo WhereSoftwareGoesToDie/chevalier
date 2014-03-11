@@ -85,7 +85,7 @@ func (e *QueryEngine) buildTagQuery(tag *SourceRequest_Tag) (*search.QueryDsl, e
 func (e *QueryEngine) buildOriginQuery(origin string) (*search.QueryDsl) {
 	qs := new(search.QueryString)
 	qs.Fields = make([]string, 1)
-	qs.Fields[0] = "origin"
+	qs.Fields[0] = "Origin"
 	qs.Query = origin
 	q := search.Query().Qs(qs)
 	return q

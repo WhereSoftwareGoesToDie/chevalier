@@ -89,7 +89,6 @@ func NewElasticsearchWriter(host string, maxConns int, retrySeconds int, index, 
 // Non-blocking.
 func (w *ElasticsearchWriter) Write(origin string, source *DataSource) error {
 	esSource := NewElasticsearchSource(origin, source)
-	fmt.Println("Indexing: %v", esSource)
 	err := w.indexer.Index(w.indexName, w.dataType, esSource.GetID(), "", nil, esSource)
 	return err
 }

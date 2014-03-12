@@ -62,11 +62,11 @@ func main() {
 	endpoint := flag.String("endpoint", "tcp://127.0.0.1:6283", "Chevalier endpoint (as a ZMQ URI).")
 	flag.Usage = func() {
 		fmt.Fprintf(os.Stderr, "Usage of %s:\n", os.Args[0])
-		fmt.Fprintf(os.Stderr, "%s <origin> [args]\n", os.Args[0])
+		fmt.Fprintf(os.Stderr, "%s <origin> <field:value> [field:value ...] [args]\n", os.Args[0])
 		flag.PrintDefaults()
 	}
 	flag.Parse()
-	if flag.NArg() < 1 {
+	if flag.NArg() < 2 {
 		flag.Usage()
 		os.Exit(1)
 	}
@@ -84,7 +84,7 @@ func main() {
 		}
 	} else {
 		tags := make([]*chevalier.SourceRequest_Tag, flag.NArg())
-		for i, arg := range flag.Args() {
+		for i, arg := range flag.Args()[1:] {
 			pair := strings.Split(arg, ":")
 			if len(pair) < 2 {
 				log.Fatal("Could not parse %v: must be a 'field:value' pair.")

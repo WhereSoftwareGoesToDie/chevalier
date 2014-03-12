@@ -38,9 +38,24 @@ func subscribeUpdate(endpoint string) error {
 	return nil
 }
 
-func runIndexer(cfg Config) {
+func getElasticsearchWriter(cfg Config) *chevalier.ElasticsearchWriter {
+	writer := chevalier.NewElasticsearchWriter(cfg.Elasticsearch.Host, cfg.Elasticsearch.MaxConns, cfg.Elasticsearch.RetrySeconds, cfg.Elasticsearch.DataType, cfg.Elasticsearch.DataType)
+	return writer
+}
+
+func RunIndexerOnce(cfg Config) {
+	IndexerLogger = Logger.NewSubLogger("indexer")
+	IndexerLogger.Infof("Starting single indexer run.")
+	writer := getElasticsearchWriter(cfg)
+	fullUpdate(writer, cfg.Vaultaire.ReadEndpoint, cfg.Vaultaire.Origins)
+}
+
+func RunIndexer(cfg Config) {
 	Logger.Infof("Starting chevalierd %v in indexer mode.", Version)
 	IndexerLogger = Logger.NewSubLogger("indexer")
-	writer := chevalier.NewElasticsearchWriter(cfg.Elasticsearch.Host, cfg.Elasticsearch.MaxConns, cfg.Elasticsearch.RetrySeconds, cfg.Elasticsearch.DataType, cfg.Elasticsearch.DataType)
-	fullUpdate(writer, cfg.Vaultaire.ReadEndpoint, cfg.Vaultaire.Origins)
+	writer := getElasticsearchWriter(cfg)
+	for {
+		IndexerLogger.Infof("Starting run.")
+		fullUpdate(writer, cfg.Vaultaire.ReadEndpoint, cfg.Vaultaire.Origins)
+	}
 }

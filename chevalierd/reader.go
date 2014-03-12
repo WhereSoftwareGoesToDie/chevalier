@@ -36,7 +36,7 @@ func handleRequest(sock *zmq.Socket, engine *chevalier.QueryEngine) error {
 	return nil
 }
 
-func runReader(cfg Config) {
+func RunReader(cfg Config) {
 	Logger.Infof("Starting chevalierd %v in reader mode.", Version)
 	ReaderLogger = Logger.NewSubLogger("reader")
 	sock, err := zmq.NewSocket(zmq.REP)

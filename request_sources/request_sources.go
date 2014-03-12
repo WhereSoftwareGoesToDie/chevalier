@@ -39,7 +39,7 @@ func queryChevalier(origin string, req *chevalier.SourceRequest, endpoint string
 	if err != nil {
 		log.Fatal(err)
 	}
-	_, err = sock.SendBytes(packet, 0)
+	_, err = sock.SendMessage(origin, packet, 0)
 	response, err := sock.RecvBytes(0)
 	if err != nil {
 		log.Fatal(err)

@@ -83,7 +83,7 @@ func main() {
 			log.Fatal("Could not unmarshal request: %v", err)
 		}
 	} else {
-		tags := make([]*chevalier.SourceRequest_Tag, flag.NArg())
+		tags := make([]*chevalier.SourceRequest_Tag, flag.NArg() - 1)
 		for i, arg := range flag.Args()[1:] {
 			pair := strings.Split(arg, ":")
 			if len(pair) < 2 {

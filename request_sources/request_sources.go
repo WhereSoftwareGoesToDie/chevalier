@@ -21,7 +21,7 @@ func queryES(origin string, req *chevalier.SourceRequest, host string) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	for _, source := range results.GetSources(origin, req) {
+	for _, source := range results.GetSources() {
 		fmt.Println(source)
 	}
 }

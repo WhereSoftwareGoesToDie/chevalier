@@ -4,6 +4,7 @@ import (
 	zmq "github.com/pebbe/zmq4"
 	"github.com/anchor/chevalier"
 	"github.com/anchor/picolog"
+	"syscall"
 )
 
 var IndexerLogger *picolog.Logger
@@ -11,7 +12,13 @@ var IndexerLogger *picolog.Logger
 func fullUpdate(w *chevalier.ElasticsearchWriter, endpoint string, origins []string) {
 	indexed := 0
 	for _, o := range origins {
-		burst, err := chevalier.GetContents(endpoint, o)
+		// We want to retry if we get interrupted.
+		var err error
+		var burst *chevalier.DataSourceBurst
+		err = syscall.EAGAIN
+		for err == syscall.EAGAIN || err == syscall.EINTR {
+			burst, err = chevalier.GetContents(endpoint, o)
+		}
 		if err != nil {
 			IndexerLogger.Errorf("Could not read contents for origin %v: %v", o, err)
 			continue

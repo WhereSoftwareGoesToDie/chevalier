@@ -12,6 +12,7 @@ var IndexerLogger *picolog.Logger
 func fullUpdate(w *chevalier.ElasticsearchWriter, endpoint string, origins []string) {
 	indexed := 0
 	for _, o := range origins {
+		IndexerLogger.Infof("Requesting sources for origin %v.", o)
 		// We want to retry if we get interrupted.
 		var err error
 		var burst *chevalier.DataSourceBurst

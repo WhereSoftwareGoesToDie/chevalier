@@ -4,12 +4,13 @@ import (
 	"github.com/anchor/chevalier"
 	zmq "github.com/pebbe/zmq4"
 	"github.com/anchor/picolog"
+	"github.com/anchor/zmqutil"
 )
 
 var ReaderLogger *picolog.Logger
 
 func handleRequest(sock *zmq.Socket, engine *chevalier.QueryEngine) error {
-	msg, err := sock.RecvMessageBytes(0)
+	msg, err := zmqutil.RetryRecvMessageBytes(sock, 0)
 	origin := string(msg[0][:])
 	sourceReq := msg[1]
 	ReaderLogger.Debugf("Got a request!")

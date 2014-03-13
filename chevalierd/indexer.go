@@ -51,7 +51,7 @@ func subscribeUpdate(endpoint string) error {
 }
 
 func getElasticsearchWriter(cfg Config) *chevalier.ElasticsearchWriter {
-	writer := chevalier.NewElasticsearchWriter(cfg.Elasticsearch.Host, cfg.Elasticsearch.MaxConns, cfg.Elasticsearch.RetrySeconds, cfg.Elasticsearch.DataType, cfg.Elasticsearch.DataType)
+	writer := chevalier.NewElasticsearchWriter(cfg.Elasticsearch.Host, cfg.Elasticsearch.MaxConns, cfg.Elasticsearch.RetrySeconds, cfg.Elasticsearch.Index, cfg.Elasticsearch.DataType)
 	return writer
 }
 

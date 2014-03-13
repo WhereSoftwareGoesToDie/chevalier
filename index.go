@@ -18,12 +18,13 @@ type ElasticsearchSource struct {
 // the form of a sha1 hash of underscore-separated field-value pairs
 // separated by newlines.
 func (s *ElasticsearchSource) GetID() string {
-	tagKeys := make([]string, len(s.Source))
+	tagKeys := make([]string, len(s.Source) + 1)
 	idx := 0
 	for field, value := range s.Source {
 		tagKeys[idx] = fmt.Sprintf("%s_%s", field, value)
 		idx++
 	}
+	tagKeys[idx] = fmt.Sprintf("Origin", s.Origin)
 	key := []byte(strings.Join(tagKeys, "\n"))
 	hash := sha1.Sum(key)
 	id := base64.StdEncoding.EncodeToString(hash[:sha1.Size])

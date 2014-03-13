@@ -89,7 +89,11 @@ func NewElasticsearchWriter(host string, maxConns int, retrySeconds int, index, 
 // Non-blocking.
 func (w *ElasticsearchWriter) Write(origin string, source *DataSource) error {
 	esSource := NewElasticsearchSource(origin, source)
-	err := w.indexer.Index(w.indexName, w.dataType, esSource.GetID(), "", nil, esSource)
+	update := map[string]interface{} {
+		"doc" : esSource,
+		"doc_as_upsert" : true,
+	}
+	err := w.indexer.Update(w.indexName, w.dataType, esSource.GetID(), "", nil, update)
 	return err
 }
 

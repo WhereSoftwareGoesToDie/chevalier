@@ -9,31 +9,35 @@ import (
 
 var IndexerLogger *picolog.Logger
 
-func fullUpdate(w *chevalier.ElasticsearchWriter, endpoint string, origins []string) {
+func originUpdate(w *chevalier.ElasticsearchWriter, endpoint string, origin string) {
 	indexed := 0
-	for _, o := range origins {
-		IndexerLogger.Infof("Requesting sources for origin %v.", o)
-		// We want to retry if we get interrupted.
-		var err error
-		var burst *chevalier.DataSourceBurst
-		err = syscall.EAGAIN
-		for err == syscall.EAGAIN || err == syscall.EINTR {
-			burst, err = chevalier.GetContents(endpoint, o)
-		}
+	IndexerLogger.Infof("Requesting sources for origin %v.", origin)
+	// We want to retry if we get interrupted.
+	var err error
+	var burst *chevalier.DataSourceBurst
+	err = syscall.EAGAIN
+	for err == syscall.EAGAIN || err == syscall.EINTR {
+		burst, err = chevalier.GetContents(endpoint, origin)
+	}
+	if err != nil {
+		IndexerLogger.Errorf("Could not read contents for origin %v: %v", origin, err)
+		return
+	}
+	for _, s := range burst.Sources {
+		err = w.Write(origin, s)
 		if err != nil {
-			IndexerLogger.Errorf("Could not read contents for origin %v: %v", o, err)
-			continue
-		}
-		for _, s := range burst.Sources {
-			err = w.Write(o, s)
-			if err != nil {
-				IndexerLogger.Errorf("Could not index source: %v", err)
-			} else {
-				indexed += 1
-			}
+			IndexerLogger.Errorf("Could not index source: %v", err)
+		} else {
+			indexed += 1
 		}
 	}
-	IndexerLogger.Infof("Indexed %v sources.", indexed)
+	IndexerLogger.Infof("Indexed %v sources for origin %v.", indexed, origin)
+}
+
+func fullUpdate(w *chevalier.ElasticsearchWriter, endpoint string, origins []string) {
+	for _, o := range origins {
+		go originUpdate(w, endpoint, o)
+	}
 }
 
 func subscribeUpdate(endpoint string) error {

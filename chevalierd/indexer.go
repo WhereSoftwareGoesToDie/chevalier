@@ -25,6 +25,7 @@ func originUpdate(w *chevalier.ElasticsearchWriter, endpoint string, origin stri
 	}
 	for _, s := range burst.Sources {
 		err = w.Write(origin, s)
+		IndexerLogger.Debugf("Writing source %v for origin %s.", s, origin)
 		if err != nil {
 			IndexerLogger.Errorf("Could not index source: %v", err)
 		} else {

@@ -9,8 +9,10 @@ import (
 
 var IndexerLogger *picolog.Logger
 
-func originUpdate(w *chevalier.ElasticsearchWriter, endpoint string, origin string) {
-	indexed := 0
+func originUpdate(sem chan bool, res chan uint64, w *chevalier.ElasticsearchWriter, endpoint, origin string) {
+	// Block until there's an available slot.
+	<-sem
+	indexed := uint64(0)
 	IndexerLogger.Infof("Requesting sources for origin %v.", origin)
 	// We want to retry if we get interrupted.
 	var err error
@@ -33,12 +35,26 @@ func originUpdate(w *chevalier.ElasticsearchWriter, endpoint string, origin stri
 		}
 	}
 	IndexerLogger.Infof("Indexed %v sources for origin %v.", indexed, origin)
+	// Seed semaphore for the next goroutine.
+	sem <- true
+	res <- indexed
 }
 
-func fullUpdate(w *chevalier.ElasticsearchWriter, endpoint string, origins []string) {
-	for _, o := range origins {
-		go originUpdate(w, endpoint, o)
+func fullUpdate(w *chevalier.ElasticsearchWriter, endpoint string, origins []string, parallelism uint) {
+	total := uint64(0)
+	output := make(chan uint64, 0)
+	semaphore := make(chan bool, parallelism)
+	for i := uint(0); i < parallelism; i++ {
+		semaphore <- true
 	}
+	for _, o := range origins {
+		go originUpdate(semaphore, output, w, endpoint, o)
+	}
+	for _, _ = range origins {
+		indexed := <-output
+		total += indexed
+	}
+	IndexerLogger.Infof("Indexer run finished; indexed %v sources in total.", total)
 }
 
 func subscribeUpdate(endpoint string) error {
@@ -60,7 +76,7 @@ func RunIndexerOnce(cfg Config) {
 	IndexerLogger = Logger.NewSubLogger("indexer")
 	IndexerLogger.Infof("Starting single indexer run.")
 	writer := getElasticsearchWriter(cfg)
-	fullUpdate(writer, cfg.Vaultaire.ReadEndpoint, cfg.Vaultaire.Origins)
+	fullUpdate(writer, cfg.Vaultaire.ReadEndpoint, cfg.Vaultaire.Origins, cfg.Indexer.Parallelism)
 }
 
 func RunIndexer(cfg Config) {
@@ -69,6 +85,6 @@ func RunIndexer(cfg Config) {
 	writer := getElasticsearchWriter(cfg)
 	for {
 		IndexerLogger.Infof("Starting run.")
-		fullUpdate(writer, cfg.Vaultaire.ReadEndpoint, cfg.Vaultaire.Origins)
+		fullUpdate(writer, cfg.Vaultaire.ReadEndpoint, cfg.Vaultaire.Origins, cfg.Indexer.Parallelism)
 	}
 }

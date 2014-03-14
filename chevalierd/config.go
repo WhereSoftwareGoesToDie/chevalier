@@ -22,4 +22,10 @@ type Config struct {
 		UpdateEndpoint string
 		Origins []string
 	}
+	Indexer struct {
+		// Maximum number of coroutines to use for indexing.
+		// Note that the Elasticsearch writer will use MaxConns
+		// threads of its own.
+		Parallelism uint
+	}
 }

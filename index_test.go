@@ -9,9 +9,9 @@ func TestGetID(t *testing.T) {
 	tags[0] = NewDataSourceTag("foo", "bar")
 	tags[1] = NewDataSourceTag("baz", "quux")
 	source := NewDataSource(tags)
-	esSource := NewElasticsearchSource(source)
+	esSource := NewElasticsearchSource("ABCDEF", source)
 	result := esSource.GetID()
-	expected := "JQUAXgluZnNGCh+UUn1RSEO81bg="
+	expected := "0hhETFpfnLKUZTgfDJDJ1Sq9GdY="
 	if result != expected {
 		t.Errorf("Got ID %v (expected %v)", result, expected)
 	}

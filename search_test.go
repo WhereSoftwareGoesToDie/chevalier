@@ -11,7 +11,7 @@ func TestBuildQuery(t *testing.T) {
 	query.Tags = make([]*SourceRequest_Tag, 2)
 	query.Tags[0] = NewSourceRequestTag("hostname", "*.example.com")
 	query.Tags[1] = NewSourceRequestTag("metric", "cpu")
-	q, err := engine.BuildQuery(query)
+	q, err := engine.BuildQuery("ABCDEF", query)
 	if err != nil {
 		t.Errorf("%v", err)
 	}
@@ -19,7 +19,7 @@ func TestBuildQuery(t *testing.T) {
 	if err != nil {
 		t.Errorf("%v", err)
 	}
-	expected := `{"from":0,"query":{"bool":{"must":[{"query_string":{"query":"*.example.com","fields":["datasource.hostname"]}},{"query_string":{"query":"cpu","fields":["datasource.metric"]}}]}},"size":0}`
+	expected := `{"from":0,"query":{"bool":{"must":[{"query_string":{"query":"*.example.com","fields":["datasource.hostname"]}},{"query_string":{"query":"cpu","fields":["datasource.metric"]}},{"query_string":{"query":"ABCDEF","fields":["Origin"]}}]}},"size":0}`
 	result := string(json[:])
 	if result != expected {
 		t.Errorf("Query marshalling mismatch: expected %v, got %v.", expected, result)

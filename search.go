@@ -200,6 +200,12 @@ func FmtResult(result *es.SearchResult) []string {
 	return results
 }
 
+// GetSourceCount returns the number of sources we currently think exist
+// in the index.
+func (e *QueryEngine) GetSourceCount() int64 {
+	return e.nSources
+}
+
 // updateSourceCount updates our running total of documents-in-index
 // (by asking Elasticsearch).
 func (e *QueryEngine) updateSourceCount() error {

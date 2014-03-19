@@ -2,9 +2,9 @@ package main
 
 import (
 	"github.com/anchor/chevalier"
-	zmq "github.com/pebbe/zmq4"
 	"github.com/anchor/picolog"
 	"github.com/anchor/zmqutil"
+	zmq "github.com/pebbe/zmq4"
 )
 
 var ReaderLogger *picolog.Logger

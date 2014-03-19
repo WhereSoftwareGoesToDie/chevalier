@@ -49,6 +49,9 @@ func (e *QueryEngine) sanitizeField(f string) string {
 	return f
 }
 
+// sanitizeTag escapes assorted Elasticsearch wildcards.
+//
+// http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/query-dsl-query-string-query.html#_reserved_characters
 func (e *QueryEngine) sanitizeTag(field, value string) (string, string) {
 	// * is normally in this list, but is not included here because
 	// we want it to act as a wildcard.
@@ -82,7 +85,9 @@ func (e *QueryEngine) buildTagQuery(tag *SourceRequest_Tag) (*search.QueryDsl, e
 	return q, nil
 }
 
-func (e *QueryEngine) buildOriginQuery(origin string) (*search.QueryDsl) {
+// buildOriginQuery returns the origin-matching part of the complete
+// query.
+func (e *QueryEngine) buildOriginQuery(origin string) *search.QueryDsl {
 	qs := new(search.QueryString)
 	qs.Fields = make([]string, 1)
 	qs.Fields[0] = "Origin"
@@ -105,6 +110,8 @@ func (e *QueryEngine) getStartResult(req *SourceRequest) int64 {
 	return startPage * pageSize
 }
 
+// getResultCount returns the number of results to return for a
+// request.
 func (e *QueryEngine) getResultCount(req *SourceRequest) int64 {
 	pageSize := req.GetSourcesPerPage()
 	if pageSize <= 0 {

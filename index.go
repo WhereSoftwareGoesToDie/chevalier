@@ -18,7 +18,7 @@ type ElasticsearchSource struct {
 // the form of a sha1 hash of underscore-separated field-value pairs
 // separated by newlines.
 func (s *ElasticsearchSource) GetID() string {
-	tagKeys := make([]string, len(s.Source) + 1)
+	tagKeys := make([]string, len(s.Source)+1)
 	idx := 0
 	for field, value := range s.Source {
 		tagKeys[idx] = fmt.Sprintf("%s_%s", field, value)
@@ -90,9 +90,9 @@ func NewElasticsearchWriter(host string, maxConns int, retrySeconds int, index, 
 // Non-blocking.
 func (w *ElasticsearchWriter) Write(origin string, source *DataSource) error {
 	esSource := NewElasticsearchSource(origin, source)
-	update := map[string]interface{} {
-		"doc" : esSource,
-		"doc_as_upsert" : true,
+	update := map[string]interface{}{
+		"doc":           esSource,
+		"doc_as_upsert": true,
 	}
 	err := w.indexer.Update(w.indexName, w.dataType, esSource.GetID(), "", nil, update)
 	return err

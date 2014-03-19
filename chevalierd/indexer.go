@@ -1,9 +1,9 @@
 package main
 
 import (
-	zmq "github.com/pebbe/zmq4"
 	"github.com/anchor/chevalier"
 	"github.com/anchor/picolog"
+	zmq "github.com/pebbe/zmq4"
 	"syscall"
 )
 

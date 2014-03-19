@@ -1,11 +1,11 @@
 package main
 
 import (
-	"github.com/anchor/picolog"
 	"code.google.com/p/gcfg"
-	"os"
 	"flag"
+	"github.com/anchor/picolog"
 	"log"
+	"os"
 )
 
 const (
@@ -33,7 +33,7 @@ func main() {
 	}
 	logStream := os.Stdout
 	if *logFile != "" {
-		logStream, err = os.OpenFile(*logFile, os.O_RDWR | os.O_APPEND | os.O_CREATE, 0660);
+		logStream, err = os.OpenFile(*logFile, os.O_RDWR|os.O_APPEND|os.O_CREATE, 0660)
 		if err != nil {
 			log.Fatalf("Could not open log file %v: %v", *logFile, err)
 		}

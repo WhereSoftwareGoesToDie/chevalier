@@ -9,10 +9,10 @@ type Config struct {
 	}
 	Elasticsearch struct {
 		// Just the hostname, not the port.
-		Host     string
-		Index    string
-		DataType string
-		MaxConns int
+		Host         string
+		Index        string
+		DataType     string
+		MaxConns     int
 		RetrySeconds int
 	}
 	Vaultaire struct {
@@ -20,7 +20,7 @@ type Config struct {
 		ReadEndpoint string
 		// Vaultaire update endpoint
 		UpdateEndpoint string
-		Origins []string
+		Origins        []string
 	}
 	Indexer struct {
 		// Maximum number of coroutines to use for indexing.

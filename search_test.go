@@ -28,8 +28,8 @@ func TestBuildQuery(t *testing.T) {
 
 func TestSanitizeTag(t *testing.T) {
 	var tagTests = []struct {
-		k string
-		v string
+		k    string
+		v    string
 		outK string
 		outV string
 	}{

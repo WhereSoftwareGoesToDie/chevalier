@@ -21,6 +21,7 @@ func main() {
 	indexOnce := flag.Bool("index-once", false, "Run indexer once and then exit.")
 	readerMode := flag.Bool("read", false, "Start reader mode. Reader mode will invoke the indexer once on startup; use -no-index to disable.")
 	noIndex := flag.Bool("no-index", false, "Do not index once at startup when started in reader mode.")
+	logFile := flag.String("log-file", "", "If set, log to this file rather than stdout.")
 	flag.Parse()
 	err := gcfg.ReadFileInto(&cfg, *configFile)
 	if err != nil {
@@ -30,7 +31,14 @@ func main() {
 	if err != nil {
 		log.Fatalf("Could not parse log level: %v", err)
 	}
-	Logger = picolog.NewLogger(logLevel, "chevalier", os.Stdout)
+	logStream := os.Stdout
+	if *logFile != "" {
+		logStream, err = os.OpenFile(*logFile, os.O_RDWR | os.O_APPEND | os.O_CREATE, 0660);
+		if err != nil {
+			log.Fatalf("Could not open log file %v: %v", *logFile, err)
+		}
+	}
+	Logger = picolog.NewLogger(logLevel, "chevalier", logStream)
 	if *indexerMode {
 		RunIndexer(cfg)
 	} else if *readerMode {

@@ -9,9 +9,17 @@ import (
 	"strings"
 )
 
+// ElasticsearchSource is the type used to serialize sources for 
+// indexing.
 type ElasticsearchSource struct {
 	Origin string
 	Source map[string]string `json:"source"`
+}
+
+// ElasticsearchOrigin stores metadata for each origin.
+type ElasticsearchOrigin struct {
+	Origin string `json:"origin"`
+	Count string `json:"count"`
 }
 
 // GetID returns a (probably) unique ID for an ElasticsearchSource, in

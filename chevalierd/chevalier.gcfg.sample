@@ -7,6 +7,7 @@ loglevel = info
 # Assumes port 9200.
 host = "localhost"
 index = "chevalier"
+metadataindex = "chevalier_metadata"
 datatype = "datasource"
 maxconns = 4
 retryseconds = 10

@@ -11,6 +11,8 @@ type Config struct {
 		// Just the hostname, not the port.
 		Host         string
 		Index        string
+		// Index name for chevalier-related metadata
+		MetadataIndex string
 		DataType     string
 		MaxConns     int
 		RetrySeconds int

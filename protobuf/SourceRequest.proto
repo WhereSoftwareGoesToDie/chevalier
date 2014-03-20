@@ -8,5 +8,6 @@ message SourceRequest {
         repeated Tag tags = 1;
         optional int64 start_page = 2;
         optional int64 sources_per_page = 3;
+        optional bool status_request = 4;
 }
 // vim: set expandtab tabstop=8:

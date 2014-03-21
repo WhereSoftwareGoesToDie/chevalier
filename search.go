@@ -158,7 +158,8 @@ func (e *QueryEngine) runSourceRequest(origin string, req *SourceRequest) (*es.S
 	if err != nil {
 		return nil, err
 	}
-	res, err := es.SearchRequest(false, e.indexName, e.dataType, q, "", 0)
+	var args map[string]interface{}
+	res, err := es.SearchRequest(e.indexName, e.dataType, args, q)
 	return &res, err
 }
 
@@ -177,7 +178,7 @@ func (e *QueryEngine) GetSources(origin string, req *SourceRequest) (*DataSource
 	sources := make([]*DataSource, len(res.Hits.Hits))
 	for i, hit := range res.Hits.Hits {
 		source := new(ElasticsearchSource)
-		err = json.Unmarshal(hit.Source, source)
+		err = json.Unmarshal(*hit.Source, source)
 		if err != nil {
 			msg := fmt.Sprintf("Response decoding error: %v", err)
 			burst := new(DataSourceBurst)
@@ -195,7 +196,7 @@ func (e *QueryEngine) GetSources(origin string, req *SourceRequest) (*DataSource
 func FmtResult(result *es.SearchResult) []string {
 	results := make([]string, len(result.Hits.Hits))
 	for i, hit := range result.Hits.Hits {
-		results[i] = string(hit.Source[:])
+		results[i] = string((*hit.Source)[:])
 	}
 	return results
 }
@@ -209,7 +210,8 @@ func (e *QueryEngine) GetSourceCount() int64 {
 // updateSourceCount updates our running total of documents-in-index
 // (by asking Elasticsearch).
 func (e *QueryEngine) updateSourceCount() error {
-	resp, err := es.Count(false, e.indexName, e.dataType)
+	var args map[string]interface{}
+	resp, err := es.Count(e.indexName, e.dataType, args)
 	e.nSources = int64(resp.Count)
 	return err
 }

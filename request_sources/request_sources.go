@@ -11,9 +11,10 @@ import (
 	"log"
 	"os"
 	"strings"
+	"encoding/json"
 )
 
-func queryES(origin string, req *chevalier.SourceRequest, host string) {
+func queryES(origin string, req *chevalier.SourceRequest, host string) *chevalier.DataSourceBurst {
 	engine := chevalier.NewQueryEngine(host, "chevalier", "datasource")
 	results, err := engine.GetSources(origin, req)
 	if err != nil {
@@ -22,12 +23,10 @@ func queryES(origin string, req *chevalier.SourceRequest, host string) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	for _, source := range results.GetSources() {
-		fmt.Println(source)
-	}
+	return results
 }
 
-func queryChevalier(origin string, req *chevalier.SourceRequest, endpoint string) {
+func queryChevalier(origin string, req *chevalier.SourceRequest, endpoint string) *chevalier.DataSourceBurst {
 	sock, err := zmq.NewSocket(zmq.REQ)
 	if err != nil {
 		log.Fatal(err)
@@ -49,9 +48,7 @@ func queryChevalier(origin string, req *chevalier.SourceRequest, endpoint string
 	if err != nil {
 		log.Fatal(err)
 	}
-	for _, source := range burst.GetSources() {
-		fmt.Println(source)
-	}
+	return burst
 }
 
 func main() {
@@ -61,6 +58,8 @@ func main() {
 	startPage := flag.Int("start-page", 0, "Obtain results from this page.")
 	pageSize := flag.Int("page-size", 0, "Number of results per page.")
 	endpoint := flag.String("endpoint", "tcp://127.0.0.1:6283", "Chevalier endpoint (as a ZMQ URI).")
+	outputJson := flag.Bool("output-json", false, "Output results as JSON.")
+	outputRaw := flag.Bool("output-raw", false, "Output results as raw protobufs (a DataSourceBurst object).")
 	flag.Usage = func() {
 		fmt.Fprintf(os.Stderr, "Usage of %s:\n", os.Args[0])
 		fmt.Fprintf(os.Stderr, "%s <origin> <field:value> [field:value ...] [args]\n", os.Args[0])
@@ -102,9 +101,22 @@ func main() {
 			req.SourcesPerPage = &size
 		}
 	}
+	var burst *chevalier.DataSourceBurst
 	if *es {
-		queryES(origin, req, *esHost)
+		burst = queryES(origin, req, *esHost)
 	} else {
-		queryChevalier(origin, req, *endpoint)
+		burst = queryChevalier(origin, req, *endpoint)
+	}
+	var b []byte
+	var err error
+	if *outputJson {
+		b, err = json.Marshal(burst)
+	} else if *outputRaw {
+		b, err = chevalier.MarshalSourceBurst(burst)
+	}
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Could not unmarshal burst: %v", err)
+	} else {
+		os.Stdout.Write(b)
 	}
 }

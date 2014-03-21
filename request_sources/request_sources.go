@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"github.com/anchor/chevalier"
+	"github.com/anchor/zmqutil"
 	zmq "github.com/pebbe/zmq4"
 	"io"
 	"io/ioutil"
@@ -39,8 +40,8 @@ func queryChevalier(origin string, req *chevalier.SourceRequest, endpoint string
 	if err != nil {
 		log.Fatal(err)
 	}
-	_, err = sock.SendMessage(origin, packet, 0)
-	response, err := sock.RecvBytes(0)
+	_, err = zmqutil.RetrySendMessage(sock, origin, packet, 0)
+	response, err := zmqutil.RetryRecvBytes(sock, 0)
 	if err != nil {
 		log.Fatal(err)
 	}

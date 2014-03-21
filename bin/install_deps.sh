@@ -2,7 +2,6 @@
 # library then you would probably be better off linking to a packaged
 # version of libmarquise.
 
-sudo apt-get install -y autoconf libtool automake build-essential libglib2.0-dev libprotobuf-c0-dev protobuf-c-compiler protobuf-compiler
 mkdir -p deps/
 cd deps
 
@@ -16,4 +15,5 @@ echo '/usr/local/lib' > /etc/ld.so.conf.d/local.conf
 sudo ldconfig
 cd ..
 
+sudo apt-get install -y autoconf libtool automake build-essential libglib2.0-dev libprotobuf-c0-dev protobuf-c-compiler protobuf-compiler
 go get code.google.com/p/goprotobuf/{proto,protoc-gen-go}

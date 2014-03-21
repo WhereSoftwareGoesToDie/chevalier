@@ -11,8 +11,8 @@ cd zeromq-4.0.4
 ./configure 
 make
 sudo make install
-echo '/usr/local/lib' > /etc/ld.so.conf.d/local.conf
-sudo ldconfig
+sudo echo '/usr/local/lib' > /etc/ld.so.conf.d/local.conf
+sudo /sbin/ldconfig
 cd ..
 
 sudo apt-get install -y autoconf libtool automake build-essential libglib2.0-dev libprotobuf-c0-dev protobuf-c-compiler protobuf-compiler

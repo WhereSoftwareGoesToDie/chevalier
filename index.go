@@ -20,6 +20,7 @@ type ElasticsearchSource struct {
 type ElasticsearchOrigin struct {
 	Origin string `json:"origin"`
 	Count string `json:"count"`
+	LastUpdated uint64 `json:"last_updated"`
 }
 
 // GetID returns a (probably) unique ID for an ElasticsearchSource, in
@@ -39,6 +40,8 @@ func (s *ElasticsearchSource) GetID() string {
 	return id
 }
 
+// NewElasticsearchSource converts a (datasource + origin) to an
+// ElasticsearchSource.
 func NewElasticsearchSource(origin string, source *DataSource) *ElasticsearchSource {
 	esSource := new(ElasticsearchSource)
 	esSource.Origin = origin
@@ -63,6 +66,8 @@ func (s *ElasticsearchSource) Unmarshal() *DataSource {
 	return pb
 }
 
+// MarshalElasticsearchSources converts source bursts (plus an origin)
+// into ElasticsearchSource objects ready for indexing.
 func MarshalElasticsearchSources(origin string, b *DataSourceBurst) []*ElasticsearchSource {
 	sources := make([]*ElasticsearchSource, len(b.Sources))
 	for i, s := range b.Sources {

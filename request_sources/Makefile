@@ -1,9 +1,7 @@
-request_sources: install
-
-install: build check
+install: request_sources check
 	go install
 
-build: deps
+request_sources: deps request_sources.go
 	go build
 
 deps:
@@ -14,3 +12,5 @@ clean:
 
 check:
 	go test
+
+.PHONY: check

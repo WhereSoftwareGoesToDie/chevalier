@@ -35,7 +35,7 @@ func originUpdate(sem chan bool, res chan uint64, w *chevalier.ElasticsearchWrit
 		}
 	}
 	IndexerLogger.Infof("Indexed %v sources for origin %v.", indexed, origin)
-	err := w.UpdateOrigin(origin, indexed)
+	err = w.UpdateOrigin(origin, indexed)
 	if err != nil {
 		IndexerLogger.Errorf("Could not update origin %v: %v", origin, err)
 	} else {

@@ -35,8 +35,12 @@ func originUpdate(sem chan bool, res chan uint64, w *chevalier.ElasticsearchWrit
 		}
 	}
 	IndexerLogger.Infof("Indexed %v sources for origin %v.", indexed, origin)
-	w.UpdateOrigin(origin, indexed)
-	IndexerLogger.Infof("Updated metdata for origin %v.", origin)
+	err := w.UpdateOrigin(origin, indexed)
+	if err != nil {
+		IndexerLogger.Errorf("Could not update origin %v: %v", origin, err)
+	} else {
+		IndexerLogger.Infof("Updated metdata for origin %v.", origin)
+	}
 	// Seed semaphore for the next goroutine.
 	sem <- true
 	res <- indexed

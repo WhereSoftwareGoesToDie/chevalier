@@ -4,6 +4,7 @@ import (
 	"crypto/sha1"
 	"encoding/base64"
 	"fmt"
+	"time"
 	"github.com/mattbaird/elastigo/api"
 	es "github.com/mattbaird/elastigo/core"
 	"strings"
@@ -19,8 +20,16 @@ type ElasticsearchSource struct {
 // ElasticsearchOrigin stores metadata for each origin.
 type ElasticsearchOrigin struct {
 	Origin string `json:"origin"`
-	Count string `json:"count"`
-	LastUpdated uint64 `json:"last_updated"`
+	Count uint64 `json:"count"`
+	LastUpdated time.Time `json:"last_updated"`
+}
+
+func NewElasticsearchOrigin(origin string, count uint64, updated time.Time) *ElasticsearchOrigin {
+	o := new(ElasticsearchOrigin)
+	o.Origin = origin
+	o.Count = count
+	o.LastUpdated = updated
+	return o
 }
 
 // GetID returns a (probably) unique ID for an ElasticsearchSource, in
@@ -81,6 +90,8 @@ func MarshalElasticsearchSources(origin string, b *DataSourceBurst) []*Elasticse
 type ElasticsearchWriter struct {
 	indexer   *es.BulkIndexer
 	indexName string
+	// Metadata index
+	metaIndex string
 	dataType  string
 	done      chan bool
 }
@@ -88,15 +99,26 @@ type ElasticsearchWriter struct {
 // NewElasticsearchWriter builds a new Writer. retrySeconds is for the
 // bulk indexer. index and dataType can be anything as long as they're
 // consistent.
-func NewElasticsearchWriter(host string, maxConns int, retrySeconds int, index, dataType string) *ElasticsearchWriter {
+func NewElasticsearchWriter(host string, maxConns int, retrySeconds int, index, metaIndex, dataType string) *ElasticsearchWriter {
 	writer := new(ElasticsearchWriter)
 	api.Domain = host
 	writer.indexer = es.NewBulkIndexerErrors(maxConns, retrySeconds)
 	writer.indexName = index
+	writer.metaIndex = metaIndex
 	writer.dataType = dataType
 	writer.done = make(chan bool)
 	writer.indexer.Run(writer.done)
 	return writer
+}
+
+func (w *ElasticsearchWriter) UpdateOrigin(origin string, count uint64) error {
+	o := NewElasticsearchOrigin(origin, count, time.Now())
+	update := map[string]interface{} {
+		"doc" : o,
+		"doc_as_upsert" : true,
+	}
+	err := w.indexer.Update(w.metaIndex, "chevalier_origin", origin, "", nil, update)
+	return err
 }
 
 // Write queues a DataSource for writing by the bulk indexer.

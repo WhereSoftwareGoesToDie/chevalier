@@ -35,6 +35,8 @@ func originUpdate(sem chan bool, res chan uint64, w *chevalier.ElasticsearchWrit
 		}
 	}
 	IndexerLogger.Infof("Indexed %v sources for origin %v.", indexed, origin)
+	w.UpdateOrigin(origin, indexed)
+	IndexerLogger.Infof("Updated metdata for origin %v.", origin)
 	// Seed semaphore for the next goroutine.
 	sem <- true
 	res <- indexed
@@ -68,7 +70,7 @@ func subscribeUpdate(endpoint string) error {
 }
 
 func getElasticsearchWriter(cfg Config) *chevalier.ElasticsearchWriter {
-	writer := chevalier.NewElasticsearchWriter(cfg.Elasticsearch.Host, cfg.Elasticsearch.MaxConns, cfg.Elasticsearch.RetrySeconds, cfg.Elasticsearch.Index, cfg.Elasticsearch.DataType)
+	writer := chevalier.NewElasticsearchWriter(cfg.Elasticsearch.Host, cfg.Elasticsearch.MaxConns, cfg.Elasticsearch.RetrySeconds, cfg.Elasticsearch.Index, cfg.Elasticsearch.MetadataIndex, cfg.Elasticsearch.DataType)
 	return writer
 }
 

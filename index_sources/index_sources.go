@@ -30,7 +30,8 @@ func main() {
 		os.Exit(1)
 	}
 	origin := flag.Arg(0)
-	writer := chevalier.NewElasticsearchWriter(*esHost, 1, 60, "chevalier", "datasource")
+	writer := chevalier.NewElasticsearchWriter(*esHost, 1, 60, "chevalier", "chevalier_metadata", "datasource")
+	defer writer.Shutdown()
 	reader := io.Reader(os.Stdin)
 	packet, err := ioutil.ReadAll(reader)
 	if err != nil {
@@ -40,12 +41,18 @@ func main() {
 	if err != nil {
 		log.Fatal("Could not unmarshal source: %v", err)
 	}
+	indexed := uint64(0)
 	for _, source := range burst.Sources {
 		err = writer.Write(origin, source)
 		if err != nil {
 			log.Println("Writer error: %v", err)
+		} else {
+			indexed++
 		}
 		go handleErrors(writer)
 	}
-	writer.Shutdown()
+	err = writer.UpdateOrigin(origin, indexed)
+	if err != nil {
+		fmt.Println("Updated origin metadata.")
+	}
 }

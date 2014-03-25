@@ -6,12 +6,13 @@ message StatusResponse {
                 // Origin name.
                 required string origin = 1;
                 // Number of sources for this origin.
-                required int64 sources = 2;
+                required uint64 sources = 2;
                 // Nanosecond-precision timestamp of last update. 
                 optional fixed64 last_updated = 3;
         }
         // All origins currently in the index.
         repeated Origin origins = 1;
+        repeated string errors = 2;
 }
 
 // vim: set expandtab tabstop=8:

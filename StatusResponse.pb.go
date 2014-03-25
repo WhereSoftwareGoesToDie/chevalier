@@ -17,6 +17,7 @@ var _ = math.Inf
 type StatusResponse struct {
 	// All origins currently in the index.
 	Origins          []*StatusResponse_Origin `protobuf:"bytes,1,rep,name=origins" json:"origins,omitempty"`
+	Errors           []string                 `protobuf:"bytes,2,rep,name=errors" json:"errors,omitempty"`
 	XXX_unrecognized []byte                   `json:"-"`
 }
 
@@ -31,11 +32,18 @@ func (m *StatusResponse) GetOrigins() []*StatusResponse_Origin {
 	return nil
 }
 
+func (m *StatusResponse) GetErrors() []string {
+	if m != nil {
+		return m.Errors
+	}
+	return nil
+}
+
 type StatusResponse_Origin struct {
 	// Origin name.
 	Origin *string `protobuf:"bytes,1,req,name=origin" json:"origin,omitempty"`
 	// Number of sources for this origin.
-	Sources *int64 `protobuf:"varint,2,req,name=sources" json:"sources,omitempty"`
+	Sources *uint64 `protobuf:"varint,2,req,name=sources" json:"sources,omitempty"`
 	// Nanosecond-precision timestamp of last update.
 	LastUpdated      *uint64 `protobuf:"fixed64,3,opt,name=last_updated" json:"last_updated,omitempty"`
 	XXX_unrecognized []byte  `json:"-"`
@@ -52,7 +60,7 @@ func (m *StatusResponse_Origin) GetOrigin() string {
 	return ""
 }
 
-func (m *StatusResponse_Origin) GetSources() int64 {
+func (m *StatusResponse_Origin) GetSources() uint64 {
 	if m != nil && m.Sources != nil {
 		return *m.Sources
 	}

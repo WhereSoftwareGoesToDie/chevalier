@@ -6,7 +6,7 @@ import (
 )
 
 func TestBuildQuery(t *testing.T) {
-	engine := NewQueryEngine("localhost", "chevalier_test", "datasource")
+	engine := NewQueryEngine("localhost", "chevalier_test", "datasource", "chevalier_metadata")
 	query := new(SourceRequest)
 	query.Tags = make([]*SourceRequest_Tag, 2)
 	query.Tags[0] = NewSourceRequestTag("hostname", "*.example.com")
@@ -36,7 +36,7 @@ func TestSanitizeTag(t *testing.T) {
 		{"*", "*", "datasource._all", "*"},
 		{"host*", "[test*]^~", "datasource.host*", `\[test*\]\^\~`},
 	}
-	engine := NewQueryEngine("localhost", "chevalier_test", "datasource")
+	engine := NewQueryEngine("localhost", "chevalier_test", "datasource", "chevalier_metadata")
 	failIfInvalid := func(f, v, wantF, wantV string) {
 		resF, resV := engine.sanitizeTag(f, v)
 		if resF != wantF || resV != wantV {

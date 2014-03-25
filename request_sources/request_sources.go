@@ -15,7 +15,7 @@ import (
 )
 
 func queryES(origin string, req *chevalier.SourceRequest, host string) *chevalier.DataSourceBurst {
-	engine := chevalier.NewQueryEngine(host, "chevalier", "datasource")
+	engine := chevalier.NewQueryEngine(host, "chevalier", "datasource", "chevalier_metadata")
 	results, err := engine.GetSources(origin, req)
 	if err != nil {
 		log.Println("Search error: %v", err)

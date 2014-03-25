@@ -2,7 +2,7 @@ package chevalier
 
 import (
 	"code.google.com/p/goprotobuf/proto"
-	"github.com/anchor/bletchley/dataframe"
+	"github.com/anchor/dataframe"
 )
 
 func UnmarshalSource(packet []byte) (*DataSource, error) {

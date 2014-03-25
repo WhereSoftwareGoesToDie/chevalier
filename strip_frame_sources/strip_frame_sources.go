@@ -6,10 +6,11 @@ package main
 
 import (
 	"bytes"
-	"github.com/anchor/bletchley/dataframe"
-	"github.com/anchor/chevalier"
 	"log"
 	"os"
+
+	"github.com/anchor/dataframe"
+	"github.com/anchor/chevalier"
 )
 
 func main() {

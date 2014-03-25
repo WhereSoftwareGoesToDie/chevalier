@@ -16,6 +16,8 @@ import (
 // against Elasticsearch.
 type QueryEngine struct {
 	indexName      string
+	metaIndex string
+	originType string
 	dataType       string
 	nSources       int64
 	updateInterval time.Duration
@@ -28,6 +30,7 @@ func NewQueryEngine(host, indexName, dataType string) *QueryEngine {
 	e := new(QueryEngine)
 	e.indexName = indexName
 	e.dataType = dataType
+	e.originType = "chevalier_origin"
 	api.Domain = host
 	e.updateSourceCount()
 	e.updateInterval = time.Second * 10
@@ -225,4 +228,43 @@ func (e *QueryEngine) updateForever() {
 			log.Printf("Error updating source count: %v", err)
 		}
 	}
+}
+
+// runOriginQuery returns an elastigo/core.SearchResult for the
+// specified origin in the metadata index.
+func (e *QueryEngine) runOriginQuery(origin string) (*es.SearchResult, error) {
+	query := map[string]interface{}{
+		"query": map[string]interface{}{
+			"bool": map[string]interface{}{
+				"must": map[string]interface{}{
+					"term": map[string]string {
+						"origin" : origin,
+					},
+				},
+			},
+		},
+	}
+	var args map[string]interface{}
+	r, err := es.SearchRequest(e.metaIndex, e.originType, args, query)
+	return &r, err
+}
+
+// GetOriginMetadata returns an ElasticsearchOrigin object for the
+// specified origin. 
+func (e *QueryEngine) GetOriginMetadata(origin string) (*ElasticsearchOrigin, error) {
+	res, err := e.runOriginQuery(origin)
+	if err != nil {
+		return nil, err
+	}
+	if len(res.Hits.Hits) == 0 {
+		errMsg := fmt.Sprintf("no metadata available for origin %v", origin)
+		return nil, errors.New(errMsg)
+	}
+	mRes := res.Hits.Hits[0]
+	om := new(ElasticsearchOrigin)
+	err = json.Unmarshal(*mRes.Source, om)
+	if err != nil {
+		return nil, err
+	}
+	return om, nil
 }

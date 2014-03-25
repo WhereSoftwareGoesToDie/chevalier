@@ -93,6 +93,7 @@ type ElasticsearchWriter struct {
 	// Metadata index
 	metaIndex string
 	dataType  string
+	originType string
 	done      chan bool
 }
 
@@ -106,6 +107,7 @@ func NewElasticsearchWriter(host string, maxConns int, retrySeconds int, index, 
 	writer.indexName = index
 	writer.metaIndex = metaIndex
 	writer.dataType = dataType
+	writer.originType = "chevalier_origin"
 	writer.done = make(chan bool)
 	writer.indexer.Run(writer.done)
 	return writer
@@ -117,7 +119,7 @@ func (w *ElasticsearchWriter) UpdateOrigin(origin string, count uint64) error {
 		"doc" : o,
 		"doc_as_upsert" : true,
 	}
-	err := w.indexer.Update(w.metaIndex, "chevalier_origin", origin, "", nil, update)
+	err := w.indexer.Update(w.metaIndex, w.originType, origin, "", nil, update)
 	return err
 }
 

@@ -48,7 +48,7 @@ func RunReader(cfg Config) {
 	if err != nil {
 		Logger.Fatalf("Could not listen on %v: %v", cfg.Chevalier.ListenAddress, err)
 	}
-	engine := chevalier.NewQueryEngine(cfg.Elasticsearch.Host, cfg.Elasticsearch.Index, cfg.Elasticsearch.DataType)
+	engine := chevalier.NewQueryEngine(cfg.Elasticsearch.Host, cfg.Elasticsearch.Index, cfg.Elasticsearch.DataType, cfg.Elasticsearch.MetadataIndex)
 	ReaderLogger.Infof("I currently see %v sources in the index.", engine.GetSourceCount())
 	reactor := zmq.NewReactor()
 	reactor.AddSocket(sock, zmq.POLLIN, func(e zmq.State) error { return handleRequest(sock, engine) })

@@ -45,6 +45,7 @@ func main() {
 		if !*noIndex {
 			go RunIndexerOnce(cfg)
 		}
+		go RunStatus(cfg)
 		RunReader(cfg)
 	} else if *indexOnce {
 		RunIndexerOnce(cfg)

@@ -26,9 +26,10 @@ type QueryEngine struct {
 // NewQueryEngine initializes a QueryEngine with the supplied
 // Elasticsearch metadata. indexName and dataType can be anything as
 // long as they're consistent.
-func NewQueryEngine(host, indexName, dataType string) *QueryEngine {
+func NewQueryEngine(host, indexName, dataType, metaIndex string) *QueryEngine {
 	e := new(QueryEngine)
 	e.indexName = indexName
+	e.metaIndex = metaIndex
 	e.dataType = dataType
 	e.originType = "chevalier_origin"
 	api.Domain = host

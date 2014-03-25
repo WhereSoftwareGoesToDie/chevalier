@@ -4,6 +4,8 @@ type Config struct {
 	Chevalier struct {
 		// ZMQ URI to listen on.
 		ListenAddress string
+		// ZMQ URI to receive/respond to status requests.
+		StatusAddress string
 		// Log level (info, debug, et cetera)
 		LogLevel string
 	}

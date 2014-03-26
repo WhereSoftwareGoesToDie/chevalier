@@ -1,12 +1,14 @@
 package main
 
 import (
+	"fmt"
 	"flag"
+	"log"
+	"os"
+
 	"github.com/anchor/chevalier"
 	"github.com/anchor/zmqutil"
 	zmq "github.com/pebbe/zmq4"
-	"log"
-	"os"
 )
 
 func main() {
@@ -37,4 +39,5 @@ func main() {
 		log.Fatal(err)
 	}
 	os.Stdout.Write(out)
+	fmt.Println()
 }

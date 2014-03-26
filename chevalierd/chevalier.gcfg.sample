@@ -14,7 +14,6 @@ maxconns = 4
 retryseconds = 10
 
 [vaultaire]
-# FIXME: get actual port numbers
 # Endpoint for a full read.
 readendpoint = "tcp://127.0.0.1:5572"
 # Endpoint for streaming updates.

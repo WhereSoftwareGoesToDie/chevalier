@@ -10,8 +10,12 @@ import (
 	es "github.com/mattbaird/elastigo/core"
 )
 
-func (s *StatusResponse) Marshal() ([]byte, error) {
+func MarshalStatusResponse(s *StatusResponse) ([]byte, error) {
 	return proto.Marshal(s)
+}
+
+func (s *StatusResponse) ToJSON() ([]byte, error) {
+	return json.Marshal(s)
 }
 
 func UnmarshalStatusResponse(b []byte) (*StatusResponse, error) {
@@ -49,8 +53,9 @@ func (e *QueryEngine) runOriginQuery(origin string) (*es.SearchResult, error) {
 		"query": map[string]interface{}{
 			"bool": map[string]interface{}{
 				"must": map[string]interface{}{
-					"term": map[string]string {
-						"origin" : origin,
+					"query_string": map[string]interface{} {
+						"default_field" : "origin",
+						"query" : origin,
 					},
 				},
 			},

@@ -17,7 +17,7 @@ func handleStatusRequest(sock *zmq.Socket, engine *chevalier.QueryEngine, origin
 	StatusLogger.Debugf("Got a status request!")
 	results := engine.GetStatus(origins)
 	StatusLogger.Debugf("Got result: %v", results)
-	reply, err := results.Marshal()
+	reply, err := chevalier.MarshalStatusResponse(results)
 	if err != nil {
 		StatusLogger.Errorf("Error marshalling reply: %v", err)
 	}

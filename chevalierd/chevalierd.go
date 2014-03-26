@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	Version = "0.2.1"
+	Version = "0.2.3"
 )
 
 var Logger *picolog.Logger

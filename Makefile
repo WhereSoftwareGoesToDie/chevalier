@@ -1,4 +1,4 @@
-all: install chevalierd index_sources request_sources strip_frame_sources
+all: install chevalierd index_sources request_sources strip_frame_sources check_chevalier
 
 install: build check
 	go install
@@ -14,6 +14,9 @@ request_sources:
 
 strip_frame_sources: 
 	cd strip_frame_sources; make
+
+check_chevalier: 
+	cd check_chevalier; make
 
 build: protobuf 
 	go build

@@ -53,5 +53,5 @@ func main() {
 		check.AddPerfDatum(*o.Origin + "_age", "s", lastUpdated)
 	}
 	check.AddPerfDatum("total_sources", "", float64(totalSources))
-	check.AddResult(nagiosplugin.OK, "Chevalier seems alive")
+	check.AddResult(nagiosplugin.OK, fmt.Sprintf("Chevalier serving %v sources", totalSources))
 }

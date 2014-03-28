@@ -58,7 +58,7 @@ func main() {
 	startPage := flag.Int("start-page", 0, "Obtain results from this page.")
 	pageSize := flag.Int("page-size", 0, "Number of results per page.")
 	endpoint := flag.String("endpoint", "tcp://127.0.0.1:6283", "Chevalier endpoint (as a ZMQ URI).")
-	outputJson := flag.Bool("output-json", false, "Output results as JSON.")
+	outputJson := flag.Bool("output-json", true, "Output results as JSON.")
 	outputRaw := flag.Bool("output-raw", false, "Output results as raw protobufs (a DataSourceBurst object).")
 	flag.Usage = func() {
 		fmt.Fprintf(os.Stderr, "Usage of %s:\n", os.Args[0])
@@ -109,9 +109,9 @@ func main() {
 	}
 	var b []byte
 	var err error
-	if *outputJson {
+	if *outputRaw {
 		b, err = json.Marshal(burst)
-	} else if *outputRaw {
+	} else if *outputJson {
 		b, err = chevalier.MarshalSourceBurst(burst)
 	}
 	if err != nil {

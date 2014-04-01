@@ -16,8 +16,8 @@ import (
 // against Elasticsearch.
 type QueryEngine struct {
 	indexName      string
-	metaIndex string
-	originType string
+	metaIndex      string
+	originType     string
 	dataType       string
 	nSources       int64
 	updateInterval time.Duration
@@ -162,8 +162,6 @@ func (e *QueryEngine) runSourceRequest(origin string, req *SourceRequest) (*es.S
 	if err != nil {
 		return nil, err
 	}
-	b, _ := json.Marshal(q)
-	fmt.Println(string(b[:]))
 	var args map[string]interface{}
 	res, err := es.SearchRequest(e.indexName, e.dataType, args, q)
 	return &res, err

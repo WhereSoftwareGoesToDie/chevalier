@@ -2,13 +2,22 @@ package chevalier
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"time"
-	"errors"
 
 	"code.google.com/p/goprotobuf/proto"
 	es "github.com/mattbaird/elastigo/core"
 )
+
+type ElasticsearchStatus struct {
+	IndicesInitialized bool `json:"indices_initialized"`
+}
+
+func NewElasticsearchStatus() *ElasticsearchStatus {
+	s := new(ElasticsearchStatus)
+	return s
+}
 
 func MarshalStatusResponse(s *StatusResponse) ([]byte, error) {
 	return proto.Marshal(s)
@@ -24,7 +33,7 @@ func UnmarshalStatusResponse(b []byte) (*StatusResponse, error) {
 	return s, err
 }
 
-func NewStatusResponse() (*StatusResponse) {
+func NewStatusResponse() *StatusResponse {
 	s := new(StatusResponse)
 	s.Origins = make([]*StatusResponse_Origin, 0)
 	s.Errors = make([]string, 0)
@@ -53,9 +62,9 @@ func (e *QueryEngine) runOriginQuery(origin string) (*es.SearchResult, error) {
 		"query": map[string]interface{}{
 			"bool": map[string]interface{}{
 				"must": map[string]interface{}{
-					"query_string": map[string]interface{} {
-						"default_field" : "origin",
-						"query" : origin,
+					"query_string": map[string]interface{}{
+						"default_field": "origin",
+						"query":         origin,
 					},
 				},
 			},
@@ -67,7 +76,7 @@ func (e *QueryEngine) runOriginQuery(origin string) (*es.SearchResult, error) {
 }
 
 // GetOriginMetadata returns an ElasticsearchOrigin object for the
-// specified origin. 
+// specified origin.
 func (e *QueryEngine) GetOriginMetadata(origin string) (*ElasticsearchOrigin, error) {
 	res, err := e.runOriginQuery(origin)
 	if err != nil {
@@ -86,7 +95,7 @@ func (e *QueryEngine) GetOriginMetadata(origin string) (*ElasticsearchOrigin, er
 	return om, nil
 }
 
-func (e *QueryEngine) GetStatus(origins []string) (*StatusResponse) {
+func (e *QueryEngine) GetStatus(origins []string) *StatusResponse {
 	s := new(StatusResponse)
 	for _, o := range origins {
 		esOrigin, err := e.GetOriginMetadata(o)

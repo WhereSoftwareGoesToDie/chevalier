@@ -4,13 +4,13 @@ import (
 	"crypto/sha1"
 	"encoding/base64"
 	"fmt"
-	"time"
 	"github.com/mattbaird/elastigo/api"
 	es "github.com/mattbaird/elastigo/core"
 	"strings"
+	"time"
 )
 
-// ElasticsearchSource is the type used to serialize sources for 
+// ElasticsearchSource is the type used to serialize sources for
 // indexing.
 type ElasticsearchSource struct {
 	Origin string
@@ -19,8 +19,8 @@ type ElasticsearchSource struct {
 
 // ElasticsearchOrigin stores metadata for each origin.
 type ElasticsearchOrigin struct {
-	Origin string `json:"origin"`
-	Count uint64 `json:"count"`
+	Origin      string    `json:"origin"`
+	Count       uint64    `json:"count"`
 	LastUpdated time.Time `json:"last_updated"`
 }
 
@@ -91,10 +91,10 @@ type ElasticsearchWriter struct {
 	indexer   *es.BulkIndexer
 	indexName string
 	// Metadata index
-	metaIndex string
-	dataType  string
+	metaIndex  string
+	dataType   string
 	originType string
-	done      chan bool
+	done       chan bool
 }
 
 // NewElasticsearchWriter builds a new Writer. retrySeconds is for the
@@ -115,9 +115,9 @@ func NewElasticsearchWriter(host string, maxConns int, retrySeconds int, index, 
 
 func (w *ElasticsearchWriter) UpdateOrigin(origin string, count uint64) error {
 	o := NewElasticsearchOrigin(origin, count, time.Now())
-	update := map[string]interface{} {
-		"doc" : o,
-		"doc_as_upsert" : true,
+	update := map[string]interface{}{
+		"doc":           o,
+		"doc_as_upsert": true,
 	}
 	err := w.indexer.Update(w.metaIndex, w.originType, origin, "", nil, update)
 	return err

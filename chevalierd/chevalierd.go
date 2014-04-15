@@ -22,6 +22,7 @@ func main() {
 	readerMode := flag.Bool("read", false, "Start reader mode. Reader mode will invoke the indexer once on startup; use -no-index to disable.")
 	noIndex := flag.Bool("no-index", false, "Do not index once at startup when started in reader mode.")
 	logFile := flag.String("log-file", "", "If set, log to this file rather than stdout.")
+	debug := flag.Bool("debug", false, "Enable debug logging (overrides configured log level).")
 	flag.Parse()
 	err := gcfg.ReadFileInto(&cfg, *configFile)
 	if err != nil {
@@ -30,6 +31,9 @@ func main() {
 	logLevel, err := picolog.ParseLogLevel(cfg.Chevalier.LogLevel)
 	if err != nil {
 		log.Fatalf("Could not parse log level: %v", err)
+	}
+	if *debug {
+		logLevel = picolog.LogDebug
 	}
 	logStream := os.Stdout
 	if *logFile != "" {

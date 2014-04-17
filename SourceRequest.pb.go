@@ -17,7 +17,7 @@ type SourceRequest struct {
 	Tags             []*SourceRequest_Tag `protobuf:"bytes,1,rep,name=tags" json:"tags,omitempty"`
 	StartPage        *int64               `protobuf:"varint,2,opt,name=start_page" json:"start_page,omitempty"`
 	SourcesPerPage   *int64               `protobuf:"varint,3,opt,name=sources_per_page" json:"sources_per_page,omitempty"`
-	StatusRequest    *bool                `protobuf:"varint,4,opt,name=status_request" json:"status_request,omitempty"`
+	QueryString      *string              `protobuf:"bytes,5,opt,name=query_string" json:"query_string,omitempty"`
 	XXX_unrecognized []byte               `json:"-"`
 }
 
@@ -46,11 +46,11 @@ func (m *SourceRequest) GetSourcesPerPage() int64 {
 	return 0
 }
 
-func (m *SourceRequest) GetStatusRequest() bool {
-	if m != nil && m.StatusRequest != nil {
-		return *m.StatusRequest
+func (m *SourceRequest) GetQueryString() string {
+	if m != nil && m.QueryString != nil {
+		return *m.QueryString
 	}
-	return false
+	return ""
 }
 
 type SourceRequest_Tag struct {

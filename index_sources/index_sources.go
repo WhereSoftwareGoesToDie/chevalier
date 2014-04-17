@@ -42,6 +42,7 @@ func main() {
 		log.Fatal("Could not unmarshal source: %v", err)
 	}
 	indexed := uint64(0)
+	log.Printf("Got %v sources.\n", len(burst.Sources))
 	for _, source := range burst.Sources {
 		err = writer.Write(origin, source)
 		if err != nil {
@@ -52,7 +53,7 @@ func main() {
 		go handleErrors(writer)
 	}
 	err = writer.UpdateOrigin(origin, indexed)
-	if err != nil {
+	if err == nil {
 		fmt.Println("Updated origin metadata.")
 	}
 }

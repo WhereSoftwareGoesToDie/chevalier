@@ -127,7 +127,19 @@ func (e *QueryEngine) getResultCount(req *SourceRequest) int64 {
 // BuildQuery takes a SourceRequest and turns it into a multi-level
 // map suitable for marshalling to JSON and sending to Elasticsearch.
 func (e *QueryEngine) BuildQuery(origin string, req *SourceRequest) (SourceQuery, error) {
-	_ = search.Search(e.indexName).Type(e.dataType)
+	fromResult := e.getStartResult(req)
+	resultCount := e.getResultCount(req)
+	// First, we check if the query_string field is set; if it is,
+	// we can ignore the rest of the request. 
+	qs := req.GetQueryString()
+	if qs != "" {
+		query := map[string]interface{}{
+			"query_string": qs,
+			"from": fromResult,
+			"size": resultCount,
+		}
+		return SourceQuery(query), nil
+	}
 	tags := req.GetTags()
 	tagQueries := make([]*search.QueryDsl, 0)
 	for _, tag := range tags {
@@ -141,8 +153,6 @@ func (e *QueryEngine) BuildQuery(origin string, req *SourceRequest) (SourceQuery
 	if len(tagQueries) == 0 {
 		return nil, errors.New("No valid query strings found.")
 	}
-	fromResult := e.getStartResult(req)
-	resultCount := e.getResultCount(req)
 	query := map[string]interface{}{
 		"query": map[string]interface{}{
 			"bool": map[string]interface{}{

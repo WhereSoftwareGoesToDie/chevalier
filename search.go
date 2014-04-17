@@ -134,7 +134,11 @@ func (e *QueryEngine) BuildQuery(origin string, req *SourceRequest) (SourceQuery
 	qs := req.GetQueryString()
 	if qs != "" {
 		query := map[string]interface{}{
-			"query_string": qs,
+			"query": map[string]interface{} {
+				"query_string" : map[string]interface{} {
+					"query" : qs,
+				},
+			},
 			"from": fromResult,
 			"size": resultCount,
 		}

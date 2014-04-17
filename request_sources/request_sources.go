@@ -58,6 +58,7 @@ func main() {
 	startPage := flag.Int("start-page", 0, "Obtain results from this page.")
 	pageSize := flag.Int("page-size", 0, "Number of results per page.")
 	endpoint := flag.String("endpoint", "tcp://127.0.0.1:6283", "Chevalier endpoint (as a ZMQ URI).")
+	qs := flag.String("query-string", "", "Elasticsearch query string (overrides field:value pairs).")
 	outputJson := flag.Bool("output-json", true, "Output results as JSON.")
 	outputRaw := flag.Bool("output-raw", false, "Output results as raw protobufs (a DataSourceBurst object).")
 	flag.Usage = func() {
@@ -66,7 +67,7 @@ func main() {
 		flag.PrintDefaults()
 	}
 	flag.Parse()
-	if flag.NArg() < 2 {
+	if flag.NArg() < 1 {
 		flag.Usage()
 		os.Exit(1)
 	}
@@ -83,22 +84,32 @@ func main() {
 			log.Fatal("Could not unmarshal request: %v", err)
 		}
 	} else {
-		tags := make([]*chevalier.SourceRequest_Tag, flag.NArg() - 1)
-		for i, arg := range flag.Args()[1:] {
-			pair := strings.Split(arg, ":")
-			if len(pair) < 2 {
-				log.Fatal("Could not parse %v: must be a 'field:value' pair.")
+		if qs != nil {
+			var noTags []*chevalier.SourceRequest_Tag
+			req = chevalier.NewSourceRequest(noTags)
+			req.QueryString = qs
+		} else {
+			if flag.NArg() < 2 {
+				flag.Usage()
+				os.Exit(1)
 			}
-			tags[i] = chevalier.NewSourceRequestTag(pair[0], pair[1])
-		}
-		req = chevalier.NewSourceRequest(tags)
-		if *startPage > 0 {
-			page := int64(*startPage)
-			req.StartPage = &page
-		}
-		if *pageSize > 0 {
-			size := int64(*pageSize)
-			req.SourcesPerPage = &size
+			tags := make([]*chevalier.SourceRequest_Tag, flag.NArg() - 1)
+			for i, arg := range flag.Args()[1:] {
+				pair := strings.Split(arg, ":")
+				if len(pair) < 2 {
+					log.Fatal("Could not parse %v: must be a 'field:value' pair.")
+				}
+				tags[i] = chevalier.NewSourceRequestTag(pair[0], pair[1])
+			}
+			req = chevalier.NewSourceRequest(tags)
+			if *startPage > 0 {
+				page := int64(*startPage)
+				req.StartPage = &page
+			}
+			if *pageSize > 0 {
+				size := int64(*pageSize)
+				req.SourcesPerPage = &size
+			}
 		}
 	}
 	var burst *chevalier.DataSourceBurst

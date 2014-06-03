@@ -2,15 +2,15 @@ package main
 
 import (
 	"code.google.com/p/gcfg"
-	"flag"
 	"github.com/anchor/picolog"
+	"github.com/anchor/chevalier"
+
+	"flag"
 	"log"
 	"os"
 )
 
-const (
-	Version = "1.0.0"
-)
+var Version = chevalier.Version
 
 var Logger *picolog.Logger
 

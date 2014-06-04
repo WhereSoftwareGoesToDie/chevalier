@@ -36,3 +36,4 @@ check: protobuf
 .PHONY : request_sources
 .PHONY : index_sources
 .PHONY : strip_frame_sources
+.PHONY : chevalierd

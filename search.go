@@ -131,13 +131,13 @@ func (e *QueryEngine) BuildQuery(origin string, req *SourceRequest) (SourceQuery
 	fromResult := e.getStartResult(req)
 	resultCount := e.getResultCount(req)
 	// First, we check if the query_string field is set; if it is,
-	// we can ignore the rest of the request. 
+	// we can ignore the rest of the request.
 	qs := req.GetQueryString()
 	if qs != "" {
 		query := map[string]interface{}{
-			"query": map[string]interface{} {
-				"query_string" : map[string]interface{} {
-					"query" : qs,
+			"query": map[string]interface{}{
+				"query_string": map[string]interface{}{
+					"query": qs,
 				},
 			},
 			"from": fromResult,

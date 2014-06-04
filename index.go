@@ -14,7 +14,9 @@ import (
 // indexing.
 type ElasticsearchSource struct {
 	Origin string
-	Source map[string]string `json:"source"`
+	// Address in Vaultaire.
+	Address string
+	Source  map[string]string `json:"source"`
 }
 
 // ElasticsearchOrigin stores metadata for each origin.
@@ -58,6 +60,7 @@ func NewElasticsearchSource(origin string, source *DataSource) *ElasticsearchSou
 	for _, tagPtr := range source.Source {
 		esSource.Source[*tagPtr.Field] = *tagPtr.Value
 	}
+	esSource.Address = esSource.GetID()
 	return esSource
 }
 

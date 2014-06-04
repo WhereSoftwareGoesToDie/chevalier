@@ -119,7 +119,7 @@ func (w *ElasticsearchWriter) UpdateOrigin(origin string, count uint64) error {
 		"doc":           o,
 		"doc_as_upsert": true,
 	}
-	err := w.indexer.Update(w.metaIndex, w.originType, origin, "", nil, update)
+	err := w.indexer.Update(w.metaIndex, w.originType, origin, "", nil, update, true)
 	return err
 }
 
@@ -131,7 +131,7 @@ func (w *ElasticsearchWriter) Write(origin string, source *DataSource) error {
 		"doc":           esSource,
 		"doc_as_upsert": true,
 	}
-	err := w.indexer.Update(w.indexName, w.dataType, esSource.GetID(), "", nil, update)
+	err := w.indexer.Update(w.indexName, w.dataType, esSource.GetID(), "", nil, update, true)
 	return err
 }
 

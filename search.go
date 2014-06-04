@@ -1,12 +1,13 @@
 package chevalier
 
 import (
-	"encoding/json"
-	"errors"
-	"fmt"
 	"github.com/mattbaird/elastigo/api"
 	es "github.com/mattbaird/elastigo/core"
 	"github.com/mattbaird/elastigo/search"
+
+	"encoding/json"
+	"errors"
+	"fmt"
 	"log"
 	"strings"
 	"time"
@@ -236,7 +237,7 @@ func (e *QueryEngine) updateSourceCount() error {
 
 // updateForever updates the source counter on a regular basis.
 func (e *QueryEngine) updateForever() {
-	for true {
+	for {
 		time.Sleep(e.updateInterval)
 		err := e.updateSourceCount()
 		if err != nil {

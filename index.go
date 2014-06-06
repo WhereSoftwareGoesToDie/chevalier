@@ -75,6 +75,7 @@ func (s *ElasticsearchSource) Unmarshal() *DataSource {
 		idx++
 	}
 	pb := NewDataSource(tags)
+	pb.Address = &s.Address
 	return pb
 }
 

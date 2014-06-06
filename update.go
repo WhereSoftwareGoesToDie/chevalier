@@ -4,7 +4,11 @@ import (
 	zmq "github.com/pebbe/zmq4"
 )
 
-// GetFullContents requests a contents list for origin from a Vaultaire
+const (
+	ContentsListRequest = 0x00
+)
+
+// GetContents list for origin from a Vaultaire
 // readerd listening on endpoint, returning it as a DataSourceBurst.
 func GetContents(endpoint, origin string) (*DataSourceBurst, error) {
 	sock, err := zmq.NewSocket(zmq.REQ)
@@ -15,7 +19,7 @@ func GetContents(endpoint, origin string) (*DataSourceBurst, error) {
 	if err != nil {
 		return nil, err
 	}
-	_, err = sock.Send(origin, 0)
+	_, err = sock.Send(origin, ContentsListRequest)
 	if err != nil {
 		return nil, err
 	}

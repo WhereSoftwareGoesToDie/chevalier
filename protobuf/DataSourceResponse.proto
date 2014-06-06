@@ -12,7 +12,6 @@ message DataSourceResponse {
                 required string value = 2;
         }
         repeated Tag     source = 1;
-        optional string address = 2;
 }
 
 // vim: set expandtab tabstop=8:

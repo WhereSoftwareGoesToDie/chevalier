@@ -4,10 +4,6 @@ import (
 	zmq "github.com/pebbe/zmq4"
 )
 
-const (
-	ContentsListRequest = 0x00
-)
-
 // GetContents list for origin from a Vaultaire
 // readerd listening on endpoint, returning it as a DataSourceBurst.
 func GetContents(endpoint, origin string) (*DataSourceBurst, error) {
@@ -19,7 +15,7 @@ func GetContents(endpoint, origin string) (*DataSourceBurst, error) {
 	if err != nil {
 		return nil, err
 	}
-	_, err = sock.Send(origin, ContentsListRequest)
+	_, err = sock.Send("", 0)
 	if err != nil {
 		return nil, err
 	}

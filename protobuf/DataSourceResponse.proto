@@ -1,6 +1,8 @@
 package chevalier;
 
 // obtained as a response from Vaultaire's readerd.
+// Not actually anymore, but we're keeping the protobuf for now for
+// simplicity's sake.
 message DataSourceResponseBurst {
         repeated DataSourceResponse sources = 1;
         optional string error = 2;
@@ -12,6 +14,7 @@ message DataSourceResponse {
                 required string value = 2;
         }
         repeated Tag     source = 1;
+        optional fixed64 address = 2;
 }
 
 // vim: set expandtab tabstop=8:

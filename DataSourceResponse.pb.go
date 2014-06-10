@@ -14,6 +14,8 @@ var _ = &json.SyntaxError{}
 var _ = math.Inf
 
 // obtained as a response from Vaultaire's readerd.
+// Not actually anymore, but we're keeping the protobuf for now for
+// simplicity's sake.
 type DataSourceResponseBurst struct {
 	Sources          []*DataSourceResponse `protobuf:"bytes,1,rep,name=sources" json:"sources,omitempty"`
 	Error            *string               `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
@@ -40,6 +42,7 @@ func (m *DataSourceResponseBurst) GetError() string {
 
 type DataSourceResponse struct {
 	Source           []*DataSourceResponse_Tag `protobuf:"bytes,1,rep,name=source" json:"source,omitempty"`
+	Address          *uint64                   `protobuf:"fixed64,2,opt,name=address" json:"address,omitempty"`
 	XXX_unrecognized []byte                    `json:"-"`
 }
 
@@ -52,6 +55,13 @@ func (m *DataSourceResponse) GetSource() []*DataSourceResponse_Tag {
 		return m.Source
 	}
 	return nil
+}
+
+func (m *DataSourceResponse) GetAddress() uint64 {
+	if m != nil && m.Address != nil {
+		return *m.Address
+	}
+	return 0
 }
 
 type DataSourceResponse_Tag struct {

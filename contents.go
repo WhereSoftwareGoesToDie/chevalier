@@ -28,16 +28,21 @@ const (
 	RemoveSuccess
 )
 
+// ContentsEntry is one address->source-dict mapping.
 type ContentsEntry struct {
 	address uint64
 	tags map[string]string
 }
 
+// ContentsResponse is a single message received from the contents daemon.
 type ContentsResponse struct {
 	opCode ResponseOpCode
 	entry *ContentsEntry
 }
 
+// unpackTags takes a byteslice representing a comma-separated list of
+// field:value pairs (assumed to be UTF-8). It returns the corresponding
+// map of fields to values.
 func unpackTags(tagData []byte) (map[string]string, error) {
 	tags := make(map[string]string, 0)
 	if len(tagData) == 0 {
@@ -57,6 +62,9 @@ func unpackTags(tagData []byte) (map[string]string, error) {
 	return tags, nil
 }
 
+// unpackContentsEntry takes a packet (with the opcode prefix byte
+// removed) and returns a ContentsResponse parsed as a
+// ContentsListEntry (or an error).
 func unpackContentsEntry(packet []byte) (*ContentsResponse,error) {
 	buf := bytes.NewBuffer(packet)
 	var addr, contentsLen uint64
@@ -80,6 +88,10 @@ func unpackContentsEntry(packet []byte) (*ContentsResponse,error) {
 	return r, err
 }
 
+// unpackContentsResponse takes a packet received from the contents
+// daemon and returns its ContentsResponse representation or an error.
+// Currently errors on packet types other than ContentsListEntry and
+// EndOfContentsList as those are the only ones we should be seeing.
 func unpackContentsResponse(packet []byte) (*ContentsResponse,error) {
 	if len(packet) == 0 {
 		return nil, errors.New("Empty packet.")

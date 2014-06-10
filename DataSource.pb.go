@@ -40,7 +40,7 @@ func (m *DataSourceBurst) GetError() string {
 
 type DataSource struct {
 	Source           []*DataSource_Tag `protobuf:"bytes,1,rep,name=source" json:"source,omitempty"`
-	Address          *string           `protobuf:"bytes,2,opt,name=address" json:"address,omitempty"`
+	Address          *uint64           `protobuf:"fixed64,3,opt,name=address" json:"address,omitempty"`
 	XXX_unrecognized []byte            `json:"-"`
 }
 
@@ -55,11 +55,11 @@ func (m *DataSource) GetSource() []*DataSource_Tag {
 	return nil
 }
 
-func (m *DataSource) GetAddress() string {
+func (m *DataSource) GetAddress() uint64 {
 	if m != nil && m.Address != nil {
 		return *m.Address
 	}
-	return ""
+	return 0
 }
 
 type DataSource_Tag struct {

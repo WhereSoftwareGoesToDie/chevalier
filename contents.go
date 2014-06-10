@@ -34,7 +34,7 @@ type ContentsEntry struct {
 }
 
 type ContentsResponse struct {
-	opCode byte
+	opCode ResponseOpCode
 	entry *ContentsEntry
 }
 
@@ -75,7 +75,7 @@ func unpackContentsEntry(packet []byte) (*ContentsResponse,error) {
 		return nil, err
 	}
 	r := new(ContentsResponse)
-	r.opCode = byte(ContentsListEntry)
+	r.opCode = ContentsListEntry
 	r.entry  = e
 	return r, err
 }
@@ -85,19 +85,22 @@ func unpackContentsResponse(packet []byte) (*ContentsResponse,error) {
 		return nil, errors.New("Empty packet.")
 	}
 	opcode := ResponseOpCode(packet[0])
+	typeError := errors.New("Unexpected packet type - expecting ContentsListEntry or EndOfContentsList.")
 	switch (opcode) {
 	case RandomAddress:
-		return nil, nil
+		return nil, typeError
 	case InvalidContentsOrigin:
-		return nil, nil
+		return nil, typeError
 	case ContentsListEntry:
 		return unpackContentsEntry(packet[1:])
 	case EndOfContentsList:
-		return nil, nil
+		res := new(ContentsResponse)
+		res.opCode = EndOfContentsList
+		return res, nil
 	case UpdateSuccess:
-		return nil, nil
+		return nil, typeError
 	case RemoveSuccess:
-		return nil, nil
+		return nil, typeError
 	default:
 		return nil, errors.New("Invalid response opcode.")
 	}

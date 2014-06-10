@@ -7,6 +7,7 @@ import (
 // GetContents list for origin from a Vaultaire
 // readerd listening on endpoint, returning it as a DataSourceBurst.
 func GetContents(endpoint, origin string) (*DataSourceBurst, error) {
+	sources := make([]*DataSourceResponse, 0)
 	sock, err := zmq.NewSocket(zmq.REQ)
 	if err != nil {
 		return nil, err
@@ -21,13 +22,34 @@ func GetContents(endpoint, origin string) (*DataSourceBurst, error) {
 	if err != nil {
 		return nil, err
 	}
-	b, err := sock.RecvBytes(0)
+	for res := new(ContentsResponse); notStopResponse(res); res, err = recvContentsMessage(sock) {
+		if err != nil {
+			return nil, err
+		}
+		res_ := unpackSourceResponse(res)
+		sources = append(sources, res_)
+	}
+	return nil, nil
+}
+
+func notStopResponse(res *ContentsResponse) bool {
+	if res == nil {
+		return false // first iteration or error
+	}
+	if res.opCode == ContentsListEntry {
+		return false // data response, continue
+	}
+	return true
+}
+
+func recvContentsMessage(sock *zmq.Socket) (*ContentsResponse, error) {
+	bs, err := sock.RecvBytes(0)
 	if err != nil {
 		return nil, err
 	}
-	burst, err := UnmarshalSourceBurst(b)
-	if err != nil {
-		return nil, err
-	}
-	return burst, nil
+	return unpackContentsResponse(bs)
+}
+
+func unpackSourceResponse(res *ContentsResponse) *DataSourceResponse {
+	return nil
 }

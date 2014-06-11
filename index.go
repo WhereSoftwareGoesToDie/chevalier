@@ -15,7 +15,7 @@ import (
 type ElasticsearchSource struct {
 	Origin string
 	// Address in Vaultaire.
-	Address string
+	Address uint64
 	Source  map[string]string `json:"source"`
 }
 
@@ -60,7 +60,7 @@ func NewElasticsearchSource(origin string, source *DataSource) *ElasticsearchSou
 	for _, tagPtr := range source.Source {
 		esSource.Source[*tagPtr.Field] = *tagPtr.Value
 	}
-	esSource.Address = esSource.GetID()
+	esSource.Address = 0
 	return esSource
 }
 

@@ -16,9 +16,14 @@ func GetContents(endpoint, origin string) (*DataSourceBurst, error) {
 	if err != nil {
 		return nil, err
 	}
-	request := make([]byte, 1)
-	request[0] = byte(ContentsListRequest)
-	_, err = sock.SendBytes(request, 0)
+	request := make([][]byte, 3)
+	request[1] = make([]byte, len(origin))
+	for idx, chr := range origin {
+		request[1][idx] = byte(chr)
+	}
+	request[2] = make([]byte, 1)
+	request[2][0] = byte(ContentsListRequest)
+	_, err = sock.SendMessage(request[0], request[1], request[2])
 	if err != nil {
 		return nil, err
 	}

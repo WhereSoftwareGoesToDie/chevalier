@@ -16,6 +16,9 @@ var Version = chevalier.Version
 
 var Logger *picolog.Logger
 
+// handleInterrupts will ignore HUP and WINCH and terminate on QUIT, INT
+// and TERM. Does not do anything special at this stage, just run it in
+// a goroutine at startup after the global logger has been initialized.
 func handleInterrupts() {
 	sigs := make(chan os.Signal, 1)
 	signal.Notify(sigs, syscall.SIGHUP, syscall.SIGINT, syscall.SIGQUIT, syscall.SIGTERM, syscall.SIGWINCH)

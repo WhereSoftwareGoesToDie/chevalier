@@ -19,7 +19,7 @@ func GetContents(endpoint, origin string) (*DataSourceBurst, error) {
 	request := make([][]byte, 2)
 	request[0] = make([]byte, len(origin))
 	for idx, chr := range origin {
-		request[1][idx] = byte(chr)
+		request[0][idx] = byte(chr)
 	}
 	request[1] = make([]byte, 1)
 	request[1][0] = byte(ContentsListRequest)

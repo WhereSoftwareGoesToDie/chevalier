@@ -2,10 +2,13 @@ package main
 
 import (
 	"code.google.com/p/gcfg"
-	"flag"
 	"github.com/anchor/picolog"
+
+	"flag"
 	"log"
 	"os"
+	"os/signal"
+	"syscall"
 )
 
 const (
@@ -13,6 +16,23 @@ const (
 )
 
 var Logger *picolog.Logger
+
+func handleInterrupts() {
+	sigs := make(chan os.Signal, 1)
+	signal.Notify(sigs, syscall.SIGHUP, syscall.SIGINT, syscall.SIGQUIT, syscall.SIGTERM, syscall.SIGWINCH)
+	for {
+		sig := <-sigs
+		switch sig {
+		case syscall.SIGHUP, syscall.SIGWINCH:
+			Logger.Infof("Ignoring %v.", sig)
+		case syscall.SIGQUIT, syscall.SIGINT, syscall.SIGTERM:
+			Logger.Infof("Got %v, exiting.", sig)
+			os.Exit(0)
+		default:
+			Logger.Fatalf("Got unexpected signal %v, panicking.")
+		}
+	}
+}
 
 func main() {
 	var cfg Config
@@ -43,6 +63,7 @@ func main() {
 		}
 	}
 	Logger = picolog.NewLogger(logLevel, "chevalier", logStream)
+	go handleInterrupts()
 	if *indexerMode {
 		RunIndexer(cfg)
 	} else if *readerMode {

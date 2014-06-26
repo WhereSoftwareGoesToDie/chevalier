@@ -129,13 +129,12 @@ func (w *ElasticsearchWriter) UpdateOrigin(origin string, count uint64) error {
 
 // Write queues a DataSource for writing by the bulk indexer.
 // Non-blocking.
-func (w *ElasticsearchWriter) Write(origin string, source *DataSource) error {
-	esSource := NewElasticsearchSource(origin, source)
+func (w *ElasticsearchWriter) Write(origin string, source *ElasticsearchSource) error {
 	update := map[string]interface{}{
-		"doc":           esSource,
+		"doc":           source,
 		"doc_as_upsert": true,
 	}
-	err := w.indexer.Update(w.indexName, w.dataType, esSource.GetID(), "", nil, update, true)
+	err := w.indexer.Update(w.indexName, w.dataType, source.GetID(), "", nil, update, true)
 	return err
 }
 

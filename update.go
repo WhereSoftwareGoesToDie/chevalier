@@ -28,7 +28,7 @@ func GetContents(endpoint, origin string) ([]*ElasticsearchSource, error) {
 		return nil, err
 	}
 	res := new(ContentsResponse)
-	for res, err = recvContentsMessage(sock); notStopResponse(res); res, err = recvContentsMessage(sock)  {
+	for res, err = recvContentsMessage(sock); !isStopResponse(res); res, err = recvContentsMessage(sock)  {
 		if err != nil {
 			return nil, err
 		}
@@ -38,7 +38,7 @@ func GetContents(endpoint, origin string) ([]*ElasticsearchSource, error) {
 	return sources, nil
 }
 
-func notStopResponse(res *ContentsResponse) bool {
+func isStopResponse(res *ContentsResponse) bool {
 	if res == nil {
 		return false // first iteration or error
 	}

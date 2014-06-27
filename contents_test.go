@@ -20,9 +20,9 @@ func TestDecodeContentsEnd(t *testing.T) {
 func TestDecodeContentsEntry(t *testing.T) {
 	buf := new(bytes.Buffer)
 	buf.WriteByte(2) // ContentsListEntry
-	addr := 42
+	addr := int64(42)
 	dict := []byte("foo:bar,baz:quux,")
-	dictLen := len(dict)
+	dictLen := int64(len(dict))
 	binary.Write(buf, binary.LittleEndian, addr)
 	binary.Write(buf, binary.LittleEndian, dictLen)
 	buf.Write(dict)

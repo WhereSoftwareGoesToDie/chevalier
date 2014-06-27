@@ -23,7 +23,7 @@ func GetContents(endpoint, origin string) ([]*ElasticsearchSource, error) {
 	}
 	request[1] = make([]byte, 1)
 	request[1][0] = byte(ContentsListRequest)
-	_, err = sock.SendMessage(request[0], request[1])
+	_, err = sock.SendMessage(request)
 	if err != nil {
 		return nil, err
 	}

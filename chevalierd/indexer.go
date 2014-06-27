@@ -16,16 +16,16 @@ func originUpdate(sem chan bool, res chan uint64, w *chevalier.ElasticsearchWrit
 	IndexerLogger.Infof("Requesting sources for origin %v.", origin)
 	// We want to retry if we get interrupted.
 	var err error
-	var burst *chevalier.DataSourceBurst
+	var sources []*chevalier.ElasticsearchSource
 	err = syscall.EAGAIN
 	for err == syscall.EAGAIN || err == syscall.EINTR {
-		burst, err = chevalier.GetContents(endpoint, origin)
+		sources, err = chevalier.GetContents(endpoint, origin)
 	}
 	if err != nil {
 		IndexerLogger.Errorf("Could not read contents for origin %v: %v", origin, err)
 		return
 	}
-	for _, s := range burst.Sources {
+	for _, s := range sources {
 		err = w.Write(origin, s)
 		IndexerLogger.Debugf("Writing source %v for origin %s.", s, origin)
 		if err != nil {

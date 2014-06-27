@@ -14,7 +14,9 @@ import (
 // indexing.
 type ElasticsearchSource struct {
 	Origin string
-	Source map[string]string `json:"source"`
+	// Address in Vaultaire.
+	Address uint64
+	Source  map[string]string `json:"source"`
 }
 
 // ElasticsearchOrigin stores metadata for each origin.
@@ -49,18 +51,6 @@ func (s *ElasticsearchSource) GetID() string {
 	return id
 }
 
-// NewElasticsearchSource converts a (datasource + origin) to an
-// ElasticsearchSource.
-func NewElasticsearchSource(origin string, source *DataSource) *ElasticsearchSource {
-	esSource := new(ElasticsearchSource)
-	esSource.Origin = origin
-	esSource.Source = make(map[string]string, 0)
-	for _, tagPtr := range source.Source {
-		esSource.Source[*tagPtr.Field] = *tagPtr.Value
-	}
-	return esSource
-}
-
 // Unmarshal turns an ElasticsearchSource (presumably itself unmarshaled
 // from a JSON object stored in Elasticsearch) into the equivalent
 // DataSource.
@@ -72,18 +62,8 @@ func (s *ElasticsearchSource) Unmarshal() *DataSource {
 		idx++
 	}
 	pb := NewDataSource(tags)
+	pb.Address = &(s.Address)
 	return pb
-}
-
-// MarshalElasticsearchSources converts source bursts (plus an origin)
-// into ElasticsearchSource objects ready for indexing.
-func MarshalElasticsearchSources(origin string, b *DataSourceBurst) []*ElasticsearchSource {
-	sources := make([]*ElasticsearchSource, len(b.Sources))
-	for i, s := range b.Sources {
-		esSource := NewElasticsearchSource(origin, s)
-		sources[i] = esSource
-	}
-	return sources
 }
 
 // ElasticsearchWriter maintains context for writes to the index.
@@ -125,13 +105,12 @@ func (w *ElasticsearchWriter) UpdateOrigin(origin string, count uint64) error {
 
 // Write queues a DataSource for writing by the bulk indexer.
 // Non-blocking.
-func (w *ElasticsearchWriter) Write(origin string, source *DataSource) error {
-	esSource := NewElasticsearchSource(origin, source)
+func (w *ElasticsearchWriter) Write(origin string, source *ElasticsearchSource) error {
 	update := map[string]interface{}{
-		"doc":           esSource,
+		"doc":           source,
 		"doc_as_upsert": true,
 	}
-	err := w.indexer.Update(w.indexName, w.dataType, esSource.GetID(), "", nil, update, true)
+	err := w.indexer.Update(w.indexName, w.dataType, source.GetID(), "", nil, update, true)
 	return err
 }
 

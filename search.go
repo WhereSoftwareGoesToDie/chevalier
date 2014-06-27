@@ -1,12 +1,13 @@
 package chevalier
 
 import (
-	"encoding/json"
-	"errors"
-	"fmt"
 	"github.com/mattbaird/elastigo/api"
 	es "github.com/mattbaird/elastigo/core"
 	"github.com/mattbaird/elastigo/search"
+
+	"encoding/json"
+	"errors"
+	"fmt"
 	"log"
 	"strings"
 	"time"
@@ -130,13 +131,13 @@ func (e *QueryEngine) BuildQuery(origin string, req *SourceRequest) (SourceQuery
 	fromResult := e.getStartResult(req)
 	resultCount := e.getResultCount(req)
 	// First, we check if the query_string field is set; if it is,
-	// we can ignore the rest of the request. 
+	// we can ignore the rest of the request.
 	qs := req.GetQueryString()
 	if qs != "" {
 		query := map[string]interface{}{
-			"query": map[string]interface{} {
-				"query_string" : map[string]interface{} {
-					"query" : qs,
+			"query": map[string]interface{}{
+				"query_string": map[string]interface{}{
+					"query": qs,
 				},
 			},
 			"from": fromResult,
@@ -236,7 +237,7 @@ func (e *QueryEngine) updateSourceCount() error {
 
 // updateForever updates the source counter on a regular basis.
 func (e *QueryEngine) updateForever() {
-	for true {
+	for {
 		time.Sleep(e.updateInterval)
 		err := e.updateSourceCount()
 		if err != nil {

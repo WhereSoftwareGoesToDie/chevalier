@@ -5,12 +5,13 @@ import (
 )
 
 func TestGetID(t *testing.T) {
-	tags := make([]*DataSource_Tag, 2)
-	tags[0] = NewDataSourceTag("foo", "bar")
-	tags[1] = NewDataSourceTag("baz", "quux")
-	source := NewDataSource(tags)
-	esSource := NewElasticsearchSource("ABCDEF", source)
-	result := esSource.GetID()
+	source := new(ElasticsearchSource)
+	source.Source = make(map[string]string, 0)
+	source.Origin = "ABCDEF"
+	source.Address = 42
+	source.Source["foo"] = "bar"
+	source.Source["baz"] = "quux"
+	result := source.GetID()
 	expected := "0hhETFpfnLKUZTgfDJDJ1Sq9GdY="
 	if result != expected {
 		t.Errorf("Got ID %v (expected %v)", result, expected)

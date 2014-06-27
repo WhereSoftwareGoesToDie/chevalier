@@ -51,19 +51,6 @@ func (s *ElasticsearchSource) GetID() string {
 	return id
 }
 
-// NewElasticsearchSource converts a (datasource + origin) to an
-// ElasticsearchSource.
-func NewElasticsearchSource(origin string, source *DataSource) *ElasticsearchSource {
-	esSource := new(ElasticsearchSource)
-	esSource.Origin = origin
-	esSource.Source = make(map[string]string, 0)
-	for _, tagPtr := range source.Source {
-		esSource.Source[*tagPtr.Field] = *tagPtr.Value
-	}
-	esSource.Address = 0
-	return esSource
-}
-
 // Unmarshal turns an ElasticsearchSource (presumably itself unmarshaled
 // from a JSON object stored in Elasticsearch) into the equivalent
 // DataSource.
@@ -77,17 +64,6 @@ func (s *ElasticsearchSource) Unmarshal() *DataSource {
 	pb := NewDataSource(tags)
 	pb.Address = &(s.Address)
 	return pb
-}
-
-// MarshalElasticsearchSources converts source bursts (plus an origin)
-// into ElasticsearchSource objects ready for indexing.
-func MarshalElasticsearchSources(origin string, b *DataSourceBurst) []*ElasticsearchSource {
-	sources := make([]*ElasticsearchSource, len(b.Sources))
-	for i, s := range b.Sources {
-		esSource := NewElasticsearchSource(origin, s)
-		sources[i] = esSource
-	}
-	return sources
 }
 
 // ElasticsearchWriter maintains context for writes to the index.

@@ -57,6 +57,7 @@ func recvContentsMessage(sock *zmq.Socket) (*ContentsResponse, error) {
 
 func unpackSourceResponse(origin string, res *ContentsResponse) *ElasticsearchSource {
 	source := new(ElasticsearchSource)
+	source.Source = make(map[string]string, 0)
 	source.Address = res.entry.address
 	for k, v := range res.entry.tags {
 		source.Source[k] = v

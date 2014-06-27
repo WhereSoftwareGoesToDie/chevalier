@@ -14,10 +14,8 @@ maxconns = 4
 retryseconds = 10
 
 [vaultaire]
-# Endpoint for a full read.
-readendpoint = "tcp://127.0.0.1:5572"
-# Endpoint for streaming updates.
-updateendpoint = "tcp://127.0.0.1:5574"
+# Endpoint for the Vaultaire contents daemon.
+contentsendpoint = "tcp://127.0.0.1:5580"
 # Origins to request from Vaultaire. 
 origins = ABCDEF
 origins = FEDCBA

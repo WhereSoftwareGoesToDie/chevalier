@@ -20,10 +20,8 @@ type Config struct {
 		RetrySeconds  int
 	}
 	Vaultaire struct {
-		// Vaultaire full read endpoint
-		ReadEndpoint string
-		// Vaultaire update endpoint
-		UpdateEndpoint string
+		// Vaultaire contents daemon endpoint.
+		ContentsEndpoint string
 		Origins        []string
 	}
 	Indexer struct {

@@ -82,7 +82,7 @@ func RunIndexerOnce(cfg Config) {
 	IndexerLogger = Logger.NewSubLogger("indexer")
 	IndexerLogger.Infof("Starting single indexer run.")
 	writer := getElasticsearchWriter(cfg)
-	fullUpdate(writer, cfg.Vaultaire.ReadEndpoint, cfg.Vaultaire.Origins, cfg.Indexer.Parallelism)
+	fullUpdate(writer, cfg.Vaultaire.ContentsEndpoint, cfg.Vaultaire.Origins, cfg.Indexer.Parallelism)
 }
 
 func RunIndexer(cfg Config) {
@@ -91,6 +91,6 @@ func RunIndexer(cfg Config) {
 	writer := getElasticsearchWriter(cfg)
 	for {
 		IndexerLogger.Infof("Starting run.")
-		fullUpdate(writer, cfg.Vaultaire.ReadEndpoint, cfg.Vaultaire.Origins, cfg.Indexer.Parallelism)
+		fullUpdate(writer, cfg.Vaultaire.ContentsEndpoint, cfg.Vaultaire.Origins, cfg.Indexer.Parallelism)
 	}
 }

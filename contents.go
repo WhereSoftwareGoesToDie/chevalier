@@ -51,6 +51,11 @@ func unpackTags(tagData []byte) (map[string]string, error) {
 	sTags := string(tagData[:])
 	pairs := strings.Split(sTags, ",")
 	for _, p := range pairs {
+		// As the items are comma-terminated rather than
+		// comma-separated, we will have a null string here. 
+		if p == "" {
+			continue
+		}
 		idx := strings.Index(p, ":")
 		if idx == -1 || idx+1 == len(p) {
 			return tags, errors.New(fmt.Sprintf("Could not parse tag %v.", p))

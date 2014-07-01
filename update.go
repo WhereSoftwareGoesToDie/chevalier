@@ -8,7 +8,7 @@ import (
 // readerd listening on endpoint, returning it as a DataSourceBurst.
 func GetContents(endpoint, origin string) ([]*ElasticsearchSource, error) {
 	sources := make([]*ElasticsearchSource, 0)
-	sock, err := zmq.NewSocket(zmq.REQ)
+	sock, err := zmq.NewSocket(zmq.DEALER)
 	if err != nil {
 		return nil, err
 	}

@@ -5,5 +5,5 @@ to Elasticsearch.
 package chevalier
 
 const (
-	Version = "1.0.0alpha1"
+	Version = "1.0.0alpha2"
 )

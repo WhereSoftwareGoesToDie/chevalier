@@ -15,9 +15,14 @@ var _ = math.Inf
 
 // Returned as a response to the chevalier client.
 type DataSourceBurst struct {
-	Sources          []*DataSource `protobuf:"bytes,1,rep,name=sources" json:"sources,omitempty"`
-	Error            *string       `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
-	XXX_unrecognized []byte        `json:"-"`
+	// All sources that matched the query received (paginated
+	// according to `start_page` and `sources_per_page` if they are
+	// set in the request).
+	Sources []*DataSource `protobuf:"bytes,1,rep,name=sources" json:"sources,omitempty"`
+	// Error message - if present, some aspect of the request
+	// failed.
+	Error            *string `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
+	XXX_unrecognized []byte  `json:"-"`
 }
 
 func (m *DataSourceBurst) Reset()         { *m = DataSourceBurst{} }
@@ -39,9 +44,13 @@ func (m *DataSourceBurst) GetError() string {
 }
 
 type DataSource struct {
-	Source           []*DataSource_Tag `protobuf:"bytes,1,rep,name=source" json:"source,omitempty"`
-	Address          *uint64           `protobuf:"fixed64,3,req,name=address" json:"address,omitempty"`
-	XXX_unrecognized []byte            `json:"-"`
+	// Source tags. There can be an arbitrary number of these.
+	// Tags which affect presentation rather than identity should be
+	// underscore-prefixed.
+	Source []*DataSource_Tag `protobuf:"bytes,1,rep,name=source" json:"source,omitempty"`
+	// Unique identifier for this data source within Vaultaire.
+	Address          *uint64 `protobuf:"fixed64,3,req,name=address" json:"address,omitempty"`
+	XXX_unrecognized []byte  `json:"-"`
 }
 
 func (m *DataSource) Reset()         { *m = DataSource{} }

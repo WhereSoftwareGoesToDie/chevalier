@@ -13,12 +13,24 @@ var _ = proto.Marshal
 var _ = &json.SyntaxError{}
 var _ = math.Inf
 
+// This message is sent by Chevalier clients; a DataSourceBurst is sent
+// in response.
 type SourceRequest struct {
-	Tags             []*SourceRequest_Tag `protobuf:"bytes,1,rep,name=tags" json:"tags,omitempty"`
-	StartPage        *int64               `protobuf:"varint,2,opt,name=start_page" json:"start_page,omitempty"`
-	SourcesPerPage   *int64               `protobuf:"varint,3,opt,name=sources_per_page" json:"sources_per_page,omitempty"`
-	QueryString      *string              `protobuf:"bytes,5,opt,name=query_string" json:"query_string,omitempty"`
-	XXX_unrecognized []byte               `json:"-"`
+	// Tags to use in search (as an 'and' query). If `query_string`
+	// is specified, the content of this field is ignored.
+	Tags []*SourceRequest_Tag `protobuf:"bytes,1,rep,name=tags" json:"tags,omitempty"`
+	// Page to return results from. If not specified, 0 is assumed.
+	StartPage *int64 `protobuf:"varint,2,opt,name=start_page" json:"start_page,omitempty"`
+	// Page to return results from. If not specified, all results
+	// are returned in one page.
+	SourcesPerPage *int64 `protobuf:"varint,3,opt,name=sources_per_page" json:"sources_per_page,omitempty"`
+	// Elasticsearch query string to use. If specified, the content
+	// of `tags` will be ignored.
+	QueryString *string `protobuf:"bytes,5,opt,name=query_string" json:"query_string,omitempty"`
+	// Vaultaire address to look up. If specified, the `tags` and
+	// `query_string` fields will be ignored.
+	Address          *uint64 `protobuf:"fixed64,6,opt,name=address" json:"address,omitempty"`
+	XXX_unrecognized []byte  `json:"-"`
 }
 
 func (m *SourceRequest) Reset()         { *m = SourceRequest{} }
@@ -51,6 +63,13 @@ func (m *SourceRequest) GetQueryString() string {
 		return *m.QueryString
 	}
 	return ""
+}
+
+func (m *SourceRequest) GetAddress() uint64 {
+	if m != nil && m.Address != nil {
+		return *m.Address
+	}
+	return 0
 }
 
 type SourceRequest_Tag struct {

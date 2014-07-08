@@ -18,5 +18,8 @@ message SourceRequest {
         // Elasticsearch query string to use. If specified, the content
         // of `tags` will be ignored.
         optional string query_string = 5;
+        // Vaultaire address to look up. If specified, the `tags` and
+        // `query_string` fields will be ignored. 
+        optional fixed64 address = 6;
 }
 // vim: set expandtab tabstop=8:

@@ -2,7 +2,12 @@ package chevalier;
 
 // Returned as a response to the chevalier client.
 message DataSourceBurst {
+        // All sources that matched the query received (paginated
+        // according to `start_page` and `sources_per_page` if they are
+        // set in the request). 
         repeated DataSource sources = 1;
+        // Error message - if present, some aspect of the request
+        // failed. 
         optional string error = 2;
 }
 
@@ -11,7 +16,11 @@ message DataSource {
                 required string field = 1;
                 required string value = 2;
         }
+        // Source tags. There can be an arbitrary number of these.
+        // Tags which affect presentation rather than identity should be
+        // underscore-prefixed.
         repeated Tag     source = 1;
+        // Unique identifier for this data source within Vaultaire.
         required fixed64 address = 3;
 }
 

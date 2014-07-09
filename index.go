@@ -46,6 +46,7 @@ func (s *ElasticsearchSource) GetID() string {
 		idx++
 	}
 	tagKeys[idx] = fmt.Sprintf("Origin", s.Origin)
+	tagKeys[idx] = fmt.Sprintf("Address", s.Address)
 	key := []byte(strings.Join(tagKeys, "\n"))
 	hash := sha1.Sum(key)
 	id := base64.StdEncoding.EncodeToString(hash[:sha1.Size])

@@ -130,7 +130,21 @@ func (e *QueryEngine) getResultCount(req *SourceRequest) int64 {
 func (e *QueryEngine) BuildQuery(origin string, req *SourceRequest) (SourceQuery, error) {
 	fromResult := e.getStartResult(req)
 	resultCount := e.getResultCount(req)
-	// First, we check if the query_string field is set; if it is,
+	// First, we check if the Address field is set; if it is,
+	// we can ignore the rest of the request.
+	if req.Address != nil {
+		query := map[string]interface{}{
+			"query": map[string]interface{}{
+				"term": map[string]uint64 {
+					"Address" : *(req.Address),
+				},
+			},
+			"from": fromResult,
+			"size": resultCount,
+		}
+		return SourceQuery(query), nil
+	}
+	// Next, we check if the query_string field is set; if it is,
 	// we can ignore the rest of the request.
 	qs := req.GetQueryString()
 	if qs != "" {

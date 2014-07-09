@@ -23,6 +23,7 @@ type ElasticsearchSource struct {
 type ElasticsearchOrigin struct {
 	Origin      string    `json:"origin"`
 	Count       uint64    `json:"count"`
+	Address     uint64    `json:"address"`
 	LastUpdated time.Time `json:"last_updated"`
 }
 

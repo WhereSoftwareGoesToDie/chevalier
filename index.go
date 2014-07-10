@@ -1,10 +1,7 @@
 package chevalier
 
 import (
-	"crypto/sha1"
-	"encoding/base64"
 	"fmt"
-	"strings"
 	"strconv"
 	"time"
 
@@ -41,18 +38,8 @@ func NewElasticsearchOrigin(origin string, count uint64, updated time.Time) *Ela
 // the form of a sha1 hash of underscore-separated field-value pairs
 // separated by newlines.
 func (s *ElasticsearchSource) GetID() string {
-	tagKeys := make([]string, len(s.Source)+1)
-	idx := 0
-	for field, value := range s.Source {
-		tagKeys[idx] = fmt.Sprintf("%s_%s", field, value)
-		idx++
-	}
-	tagKeys[idx] = fmt.Sprintf("Origin", s.Origin)
-	tagKeys[idx] = fmt.Sprintf("Address", s.Address)
-	key := []byte(strings.Join(tagKeys, "\n"))
-	hash := sha1.Sum(key)
-	id := base64.StdEncoding.EncodeToString(hash[:sha1.Size])
-	return id
+	k := fmt.Sprintf("%v/%v", s.Origin, s.Address)
+	return k
 }
 
 // Unmarshal turns an ElasticsearchSource (presumably itself unmarshaled

@@ -12,7 +12,7 @@ func TestGetID(t *testing.T) {
 	source.Source["foo"] = "bar"
 	source.Source["baz"] = "quux"
 	result := source.GetID()
-	expected := "bMJ8AOXOlYes6UaBEmO31v6lzOU="
+	expected := "ABCDEF/42"
 	if result != expected {
 		t.Errorf("Got ID %v (expected %v)", result, expected)
 	}

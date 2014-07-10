@@ -121,9 +121,9 @@ func main() {
 	var b []byte
 	var err error
 	if *outputRaw {
-		b, err = json.Marshal(burst)
-	} else if *outputJson {
 		b, err = chevalier.MarshalSourceBurst(burst)
+	} else if *outputJson {
+		b, err = json.Marshal(burst)
 	}
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Could not unmarshal burst: %v", err)

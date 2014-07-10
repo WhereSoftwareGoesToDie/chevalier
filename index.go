@@ -4,10 +4,12 @@ import (
 	"crypto/sha1"
 	"encoding/base64"
 	"fmt"
+	"strings"
+	"strconv"
+	"time"
+
 	"github.com/mattbaird/elastigo/api"
 	es "github.com/mattbaird/elastigo/core"
-	"strings"
-	"time"
 )
 
 // ElasticsearchSource is the type used to serialize sources for
@@ -15,7 +17,7 @@ import (
 type ElasticsearchSource struct {
 	Origin string
 	// Address in Vaultaire.
-	Address uint64
+	Address string
 	Source  map[string]string `json:"source"`
 }
 
@@ -56,7 +58,7 @@ func (s *ElasticsearchSource) GetID() string {
 // Unmarshal turns an ElasticsearchSource (presumably itself unmarshaled
 // from a JSON object stored in Elasticsearch) into the equivalent
 // DataSource.
-func (s *ElasticsearchSource) Unmarshal() *DataSource {
+func (s *ElasticsearchSource) Unmarshal() (*DataSource,error) {
 	tags := make([]*DataSource_Tag, len(s.Source))
 	idx := 0
 	for field, value := range s.Source {
@@ -64,8 +66,12 @@ func (s *ElasticsearchSource) Unmarshal() *DataSource {
 		idx++
 	}
 	pb := NewDataSource(tags)
-	pb.Address = &(s.Address)
-	return pb
+	addr, err := strconv.ParseUint(s.Address, 10, 64)
+	if err != nil {
+		return nil, err
+	}
+	pb.Address = &addr
+	return pb, nil
 }
 
 // ElasticsearchWriter maintains context for writes to the index.

@@ -2,6 +2,8 @@ package chevalier
 
 import (
 	zmq "github.com/pebbe/zmq4"
+
+	"strconv"
 )
 
 // GetContents list for origin from a Vaultaire
@@ -59,7 +61,7 @@ func recvContentsMessage(sock *zmq.Socket) (*ContentsResponse, error) {
 func unpackSourceResponse(origin string, res *ContentsResponse) *ElasticsearchSource {
 	source := new(ElasticsearchSource)
 	source.Source = make(map[string]string, 0)
-	source.Address = res.entry.address
+	source.Address = strconv.FormatUint(res.entry.address, 10)
 	for k, v := range res.entry.tags {
 		source.Source[k] = v
 	}

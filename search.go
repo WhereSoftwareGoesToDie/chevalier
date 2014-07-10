@@ -206,7 +206,7 @@ func (e *QueryEngine) GetSources(origin string, req *SourceRequest) (*DataSource
 		msg := fmt.Sprintf("Request error: %v", err)
 		burst := new(DataSourceBurst)
 		burst.Error = &msg
-		return burst, err
+		return burst, nil
 	}
 	sources := make([]*DataSource, len(res.Hits.Hits))
 	for i, hit := range res.Hits.Hits {
@@ -216,9 +216,15 @@ func (e *QueryEngine) GetSources(origin string, req *SourceRequest) (*DataSource
 			msg := fmt.Sprintf("Response decoding error: %v", err)
 			burst := new(DataSourceBurst)
 			burst.Error = &msg
-			return burst, err
+			return burst, nil
 		}
-		sources[i] = source.Unmarshal()
+		sources[i], err = source.Unmarshal()
+		if err != nil {
+			msg := fmt.Sprintf("Elasticsearch object decoding error: %v", err)
+			burst := new(DataSourceBurst)
+			burst.Error = &msg
+			return burst, nil
+		}
 	}
 	burst := BuildSourceBurst(sources)
 	return burst, nil

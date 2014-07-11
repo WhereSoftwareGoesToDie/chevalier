@@ -10,5 +10,7 @@ env:
   - PATH=$GOPATH/bin:$PATH
 
 script:
+  - go get github.com/tools/godep
+  - sudo cp /home/travis/gopath/bin/godep /usr/local/bin
   - sudo cp /home/travis/gopath/bin/protoc-gen-go /usr/local/bin
   - make all

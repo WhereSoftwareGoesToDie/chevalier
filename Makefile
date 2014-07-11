@@ -27,7 +27,7 @@ check: protobuf
 
 deps:
 	go get github.com/tools/godep
-	godep get
+	$(GOPATH)/bin/godep get
 
 .PHONY : all
 .PHONY : deps

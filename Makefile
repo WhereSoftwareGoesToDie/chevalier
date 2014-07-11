@@ -1,6 +1,6 @@
 all: install chevalierd request_sources check_chevalier
 
-install: deps build check
+install: build check
 	go install
 
 chevalierd: 
@@ -27,7 +27,7 @@ check: protobuf
 
 deps:
 	go get github.com/tools/godep
-	$(GOPATH)/bin/godep get
+	godep get
 
 .PHONY : all
 .PHONY : deps

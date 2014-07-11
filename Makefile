@@ -26,10 +26,8 @@ check: protobuf
 	go test
 
 deps:
-	go get github.com/mattbaird/elastigo/api
-	go get github.com/mattbaird/elastigo/core
-	go get github.com/mattbaird/elastigo/search
-	go get github.com/pebbe/zmq4
+	go get github.com/tools/godep
+	godep get
 
 .PHONY : all
 .PHONY : deps

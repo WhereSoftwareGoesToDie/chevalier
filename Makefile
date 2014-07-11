@@ -1,6 +1,7 @@
 all: install chevalierd request_sources check_chevalier
 
 install: build check
+	go get
 	go install
 
 chevalierd: 

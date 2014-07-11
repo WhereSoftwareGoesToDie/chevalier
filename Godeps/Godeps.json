@@ -1,0 +1,35 @@
+{
+	"ImportPath": "github.com/anchor/chevalier",
+	"GoVersion": "go1.2",
+	"Deps": [
+		{
+			"ImportPath": "code.google.com/p/goprotobuf/proto",
+			"Comment": "go.r60-128",
+			"Rev": "4aaee30bd610da13106459129fa07b4429d48fe2"
+		},
+		{
+			"ImportPath": "github.com/araddon/gou",
+			"Rev": "15c17a23ba2c1b5b15f268af738b80e912615fba"
+		},
+		{
+			"ImportPath": "github.com/bitly/go-hostpool",
+			"Rev": "fed86fae5cacdc77e7399937e2f8836563620a2e"
+		},
+		{
+			"ImportPath": "github.com/mattbaird/elastigo/api",
+			"Rev": "736b7e4f9b075241104f0ca70d4966025b7cf2a2"
+		},
+		{
+			"ImportPath": "github.com/mattbaird/elastigo/core",
+			"Rev": "736b7e4f9b075241104f0ca70d4966025b7cf2a2"
+		},
+		{
+			"ImportPath": "github.com/mattbaird/elastigo/search",
+			"Rev": "736b7e4f9b075241104f0ca70d4966025b7cf2a2"
+		},
+		{
+			"ImportPath": "github.com/pebbe/zmq4",
+			"Rev": "a082a5f40b31599ed0aa72cdd2369154db701e85"
+		}
+	]
+}

@@ -1,4 +1,4 @@
-all: install chevalierd request_sources strip_frame_sources check_chevalier
+all: install chevalierd request_sources check_chevalier
 
 install: build check
 	go install
@@ -8,9 +8,6 @@ chevalierd:
 
 request_sources: 
 	cd request_sources; make
-
-strip_frame_sources: 
-	cd strip_frame_sources; make
 
 check_chevalier: 
 	cd check_chevalier; make
@@ -31,6 +28,4 @@ check: protobuf
 .PHONY : all
 .PHONY : protobuf
 .PHONY : request_sources
-.PHONY : index_sources
-.PHONY : strip_frame_sources
 .PHONY : chevalierd

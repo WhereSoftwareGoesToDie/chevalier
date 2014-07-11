@@ -1,7 +1,6 @@
 all: install chevalierd request_sources check_chevalier
 
-install: build check
-	go get
+install: deps build check
 	go install
 
 chevalierd: 
@@ -26,7 +25,14 @@ goprotobuf:
 check: protobuf
 	go test
 
+deps:
+	go get github.com/mattbaird/elastigo/api
+	go get github.com/mattbaird/elastigo/core
+	go get github.com/mattbaird/elastigo/search
+	go get github.com/pebbe/zmq4
+
 .PHONY : all
+.PHONY : deps
 .PHONY : protobuf
 .PHONY : request_sources
 .PHONY : chevalierd

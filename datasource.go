@@ -2,7 +2,6 @@ package chevalier
 
 import (
 	"code.google.com/p/goprotobuf/proto"
-	"github.com/anchor/dataframe"
 )
 
 func UnmarshalSource(packet []byte) (*DataSource, error) {
@@ -26,19 +25,6 @@ func BuildSourceBurst(sources []*DataSource) *DataSourceBurst {
 func MarshalSourceBurst(burst *DataSourceBurst) ([]byte, error) {
 	marshalled, err := proto.Marshal(burst)
 	return marshalled, err
-}
-
-// DataFrameSource takes a Vaultaire DataFrame and returns just its
-// source component as a DataSource.
-func DataFrameSource(frame *dataframe.DataFrame) *DataSource {
-	source := new(DataSource)
-	source.Source = make([]*DataSource_Tag, len(frame.Source))
-	for i, tag := range frame.Source {
-		source.Source[i] = new(DataSource_Tag)
-		source.Source[i].Field = tag.Field
-		source.Source[i].Value = tag.Value
-	}
-	return source
 }
 
 func NewDataSourceTag(field, value string) *DataSource_Tag {

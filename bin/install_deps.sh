@@ -11,7 +11,7 @@ cd zeromq-4.0.4
 ./configure 
 make
 sudo make install
-sudo echo '/usr/local/lib' > /etc/ld.so.conf.d/local.conf
+sudo su -c "echo '/usr/local/lib' > /etc/ld.so.conf.d/local.conf"
 sudo /sbin/ldconfig
 cd ..
 

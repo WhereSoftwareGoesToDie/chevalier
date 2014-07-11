@@ -5,7 +5,6 @@ go:
 
 install:
   - ./bin/install_deps.sh
-  - go get -u -t
 
 env:
   - PATH=$GOPATH/bin:$PATH

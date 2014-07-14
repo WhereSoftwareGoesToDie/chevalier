@@ -31,14 +31,6 @@
 			"Rev": "fed86fae5cacdc77e7399937e2f8836563620a2e"
 		},
 		{
-			"ImportPath": "github.com/mattbaird/elastigo/api",
-			"Rev": "736b7e4f9b075241104f0ca70d4966025b7cf2a2"
-		},
-		{
-			"ImportPath": "github.com/mattbaird/elastigo/core",
-			"Rev": "736b7e4f9b075241104f0ca70d4966025b7cf2a2"
-		},
-		{
 			"ImportPath": "github.com/pebbe/zmq4",
 			"Rev": "a082a5f40b31599ed0aa72cdd2369154db701e85"
 		}

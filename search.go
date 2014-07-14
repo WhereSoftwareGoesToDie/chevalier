@@ -1,9 +1,9 @@
 package chevalier
 
 import (
-	"github.com/mattbaird/elastigo/api"
-	es "github.com/mattbaird/elastigo/core"
-	"github.com/mattbaird/elastigo/search"
+	"github.com/anchor/elastigo/api"
+	es "github.com/anchor/elastigo/core"
+	"github.com/anchor/elastigo/search"
 
 	"encoding/json"
 	"errors"

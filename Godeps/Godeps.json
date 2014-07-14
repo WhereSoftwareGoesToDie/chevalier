@@ -8,6 +8,21 @@
 			"Rev": "4aaee30bd610da13106459129fa07b4429d48fe2"
 		},
 		{
+			"ImportPath": "github.com/anchor/elastigo/api",
+			"Comment": "v1.0",
+			"Rev": "0c98885a2b2575c99882263dfc4bf6aae9079a63"
+		},
+		{
+			"ImportPath": "github.com/anchor/elastigo/core",
+			"Comment": "v1.0",
+			"Rev": "0c98885a2b2575c99882263dfc4bf6aae9079a63"
+		},
+		{
+			"ImportPath": "github.com/anchor/elastigo/search",
+			"Comment": "v1.0",
+			"Rev": "0c98885a2b2575c99882263dfc4bf6aae9079a63"
+		},
+		{
 			"ImportPath": "github.com/araddon/gou",
 			"Rev": "15c17a23ba2c1b5b15f268af738b80e912615fba"
 		},
@@ -21,10 +36,6 @@
 		},
 		{
 			"ImportPath": "github.com/mattbaird/elastigo/core",
-			"Rev": "736b7e4f9b075241104f0ca70d4966025b7cf2a2"
-		},
-		{
-			"ImportPath": "github.com/mattbaird/elastigo/search",
 			"Rev": "736b7e4f9b075241104f0ca70d4966025b7cf2a2"
 		},
 		{

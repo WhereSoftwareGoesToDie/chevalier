@@ -5,8 +5,8 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/mattbaird/elastigo/api"
-	es "github.com/mattbaird/elastigo/core"
+	"github.com/anchor/elastigo/api"
+	es "github.com/anchor/elastigo/core"
 )
 
 // ElasticsearchSource is the type used to serialize sources for

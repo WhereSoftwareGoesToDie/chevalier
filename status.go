@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"code.google.com/p/goprotobuf/proto"
-	es "github.com/mattbaird/elastigo/core"
+	es "github.com/anchor/elastigo/core"
 )
 
 type ElasticsearchStatus struct {

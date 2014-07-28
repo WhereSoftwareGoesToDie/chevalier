@@ -231,7 +231,7 @@ func (e *QueryEngine) GetSources(origin string, req *SourceRequest) (*DataSource
 		}
 		// Include the source in the result set if it is not
 		// empty, or the user has requested empty sources.
-		if !pbSource.Empty() || filterEmpty == false {
+		if !pbSource.Empty() || !filterEmpty {
 			sources = append(sources, pbSource)
 		}
 	}

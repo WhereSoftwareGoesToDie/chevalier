@@ -1,11 +1,11 @@
 package chevalier
 
 import (
-	"errors"
-	"encoding/binary"
 	"bytes"
-	"strings"
+	"encoding/binary"
+	"errors"
 	"fmt"
+	"strings"
 )
 
 type RequestOpCode byte
@@ -31,13 +31,13 @@ const (
 // ContentsEntry is one address->source-dict mapping.
 type ContentsEntry struct {
 	address uint64
-	tags map[string]string
+	tags    map[string]string
 }
 
 // ContentsResponse is a single message received from the contents daemon.
 type ContentsResponse struct {
 	opCode ResponseOpCode
-	entry *ContentsEntry
+	entry  *ContentsEntry
 }
 
 // unpackTags takes a byteslice representing a comma-separated list of
@@ -52,7 +52,7 @@ func unpackTags(tagData []byte) (map[string]string, error) {
 	pairs := strings.Split(sTags, ",")
 	for _, p := range pairs {
 		// As the items are comma-terminated rather than
-		// comma-separated, we will have a null string here. 
+		// comma-separated, we will have a null string here.
 		if p == "" {
 			continue
 		}
@@ -70,7 +70,7 @@ func unpackTags(tagData []byte) (map[string]string, error) {
 // unpackContentsEntry takes a packet (with the opcode prefix byte
 // removed) and returns a ContentsResponse parsed as a
 // ContentsListEntry (or an error).
-func unpackContentsEntry(packet []byte) (*ContentsResponse,error) {
+func unpackContentsEntry(packet []byte) (*ContentsResponse, error) {
 	buf := bytes.NewBuffer(packet)
 	var addr, contentsLen uint64
 	err := binary.Read(buf, binary.LittleEndian, &addr)
@@ -89,7 +89,7 @@ func unpackContentsEntry(packet []byte) (*ContentsResponse,error) {
 	}
 	r := new(ContentsResponse)
 	r.opCode = ContentsListEntry
-	r.entry  = e
+	r.entry = e
 	return r, err
 }
 
@@ -97,13 +97,13 @@ func unpackContentsEntry(packet []byte) (*ContentsResponse,error) {
 // daemon and returns its ContentsResponse representation or an error.
 // Currently errors on packet types other than ContentsListEntry and
 // EndOfContentsList as those are the only ones we should be seeing.
-func unpackContentsResponse(packet []byte) (*ContentsResponse,error) {
+func unpackContentsResponse(packet []byte) (*ContentsResponse, error) {
 	if len(packet) == 0 {
 		return nil, errors.New("Empty packet.")
 	}
 	opcode := ResponseOpCode(packet[0])
 	typeError := errors.New("Unexpected packet type - expecting ContentsListEntry or EndOfContentsList.")
-	switch (opcode) {
+	switch opcode {
 	case RandomAddress:
 		return nil, typeError
 	case InvalidContentsOrigin:

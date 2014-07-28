@@ -1,9 +1,9 @@
 package chevalier
 
 import (
-	"testing"
 	"bytes"
 	"encoding/binary"
+	"testing"
 )
 
 func TestDecodeContentsEnd(t *testing.T) {

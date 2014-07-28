@@ -45,7 +45,7 @@ func (s *ElasticsearchSource) GetID() string {
 // Unmarshal turns an ElasticsearchSource (presumably itself unmarshaled
 // from a JSON object stored in Elasticsearch) into the equivalent
 // DataSource.
-func (s *ElasticsearchSource) Unmarshal() (*DataSource,error) {
+func (s *ElasticsearchSource) Unmarshal() (*DataSource, error) {
 	tags := make([]*DataSource_Tag, len(s.Source))
 	idx := 0
 	for field, value := range s.Source {

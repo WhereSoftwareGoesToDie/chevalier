@@ -22,7 +22,7 @@ type Config struct {
 	Vaultaire struct {
 		// Vaultaire contents daemon endpoint.
 		ContentsEndpoint string
-		Origins        []string
+		Origins          []string
 	}
 	Indexer struct {
 		// Maximum number of coroutines to use for indexing.

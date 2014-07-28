@@ -135,8 +135,8 @@ func (e *QueryEngine) BuildQuery(origin string, req *SourceRequest) (SourceQuery
 	if req.Address != nil {
 		query := map[string]interface{}{
 			"query": map[string]interface{}{
-				"term": map[string]uint64 {
-					"Address" : *(req.Address),
+				"term": map[string]uint64{
+					"Address": *(req.Address),
 				},
 			},
 			"from": fromResult,

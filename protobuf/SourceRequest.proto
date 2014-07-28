@@ -21,5 +21,8 @@ message SourceRequest {
         // Vaultaire address to look up. If specified, the `tags` and
         // `query_string` fields will be ignored. 
         optional fixed64 address = 6;
+        // If true, do not filter empty sources (addresses with no tags
+        // associated) from the result set. Defaults to false.
+        optional bool include_empty = 7;
 }
 // vim: set expandtab tabstop=8:

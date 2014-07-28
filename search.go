@@ -135,8 +135,8 @@ func (e *QueryEngine) BuildQuery(origin string, req *SourceRequest) (SourceQuery
 	if req.Address != nil {
 		query := map[string]interface{}{
 			"query": map[string]interface{}{
-				"term": map[string]uint64 {
-					"Address" : *(req.Address),
+				"term": map[string]uint64{
+					"Address": *(req.Address),
 				},
 			},
 			"from": fromResult,
@@ -201,6 +201,10 @@ func (e *QueryEngine) runSourceRequest(origin string, req *SourceRequest) (*es.S
 // then a valid DataSourceBurst will still be returned, with the Error
 // field set.
 func (e *QueryEngine) GetSources(origin string, req *SourceRequest) (*DataSourceBurst, error) {
+	filterEmpty := true
+	if req.GetIncludeEmpty() {
+		filterEmpty = false
+	}
 	res, err := e.runSourceRequest(origin, req)
 	if err != nil {
 		msg := fmt.Sprintf("Request error: %v", err)
@@ -208,8 +212,8 @@ func (e *QueryEngine) GetSources(origin string, req *SourceRequest) (*DataSource
 		burst.Error = &msg
 		return burst, nil
 	}
-	sources := make([]*DataSource, len(res.Hits.Hits))
-	for i, hit := range res.Hits.Hits {
+	sources := make([]*DataSource, 0)
+	for _, hit := range res.Hits.Hits {
 		source := new(ElasticsearchSource)
 		err = json.Unmarshal(*hit.Source, source)
 		if err != nil {
@@ -218,12 +222,17 @@ func (e *QueryEngine) GetSources(origin string, req *SourceRequest) (*DataSource
 			burst.Error = &msg
 			return burst, nil
 		}
-		sources[i], err = source.Unmarshal()
+		pbSource, err := source.Unmarshal()
 		if err != nil {
 			msg := fmt.Sprintf("Elasticsearch object decoding error: %v", err)
 			burst := new(DataSourceBurst)
 			burst.Error = &msg
 			return burst, nil
+		}
+		// Include the source in the result set if it is not
+		// empty, or the user has requested empty sources.
+		if !pbSource.Empty() || !filterEmpty {
+			sources = append(sources, pbSource)
 		}
 	}
 	burst := BuildSourceBurst(sources)

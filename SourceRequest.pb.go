@@ -29,8 +29,11 @@ type SourceRequest struct {
 	QueryString *string `protobuf:"bytes,5,opt,name=query_string" json:"query_string,omitempty"`
 	// Vaultaire address to look up. If specified, the `tags` and
 	// `query_string` fields will be ignored.
-	Address          *uint64 `protobuf:"fixed64,6,opt,name=address" json:"address,omitempty"`
-	XXX_unrecognized []byte  `json:"-"`
+	Address *uint64 `protobuf:"fixed64,6,opt,name=address" json:"address,omitempty"`
+	// If true, do not filter empty sources (addresses with no tags
+	// associated) from the result set. Defaults to false.
+	IncludeEmpty     *bool  `protobuf:"varint,7,opt,name=include_empty" json:"include_empty,omitempty"`
+	XXX_unrecognized []byte `json:"-"`
 }
 
 func (m *SourceRequest) Reset()         { *m = SourceRequest{} }
@@ -70,6 +73,13 @@ func (m *SourceRequest) GetAddress() uint64 {
 		return *m.Address
 	}
 	return 0
+}
+
+func (m *SourceRequest) GetIncludeEmpty() bool {
+	if m != nil && m.IncludeEmpty != nil {
+		return *m.IncludeEmpty
+	}
+	return false
 }
 
 type SourceRequest_Tag struct {

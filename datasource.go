@@ -41,3 +41,10 @@ func NewDataSource(tags []*DataSource_Tag) *DataSource {
 	source.Source = tags
 	return source
 }
+
+func (s *DataSource) Empty() bool {
+	if s.GetSource() != nil {
+		return false
+	}
+	return true
+}

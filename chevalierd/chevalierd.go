@@ -2,8 +2,8 @@ package main
 
 import (
 	"code.google.com/p/gcfg"
-	"github.com/anchor/picolog"
 	"github.com/anchor/chevalier"
+	"github.com/anchor/picolog"
 
 	"flag"
 	"log"

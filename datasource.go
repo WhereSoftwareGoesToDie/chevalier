@@ -43,7 +43,7 @@ func NewDataSource(tags []*DataSource_Tag) *DataSource {
 }
 
 func (s *DataSource) Empty() bool {
-	if s.GetSource() != nil {
+	if s.GetSource() != nil && len(s.GetSource()) > 0 {
 		return false
 	}
 	return true

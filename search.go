@@ -81,13 +81,9 @@ func (e *QueryEngine) buildTagQuery(tag *SourceRequest_Tag) (map[string]interfac
 	if value == "" {
 		return nil, errors.New("empty query string")
 	}
-	fields := make([]string, 1)
-	fields[0] = field
 	qs := map[string]interface{} {
-		"query_string" : map[string]interface{} {
-			"query" : value,
-			"fields" : fields,
-			"analyzer" : "keyword",
+		"wildcard" : map[string]interface{} {
+			field : value,
 		},
 	}
 	return qs, nil

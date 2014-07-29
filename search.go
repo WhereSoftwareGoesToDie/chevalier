@@ -3,7 +3,6 @@ package chevalier
 import (
 	"github.com/anchor/elastigo/api"
 	es "github.com/anchor/elastigo/core"
-	"github.com/anchor/elastigo/search"
 
 	"encoding/json"
 	"errors"
@@ -76,29 +75,36 @@ func (e *QueryEngine) sanitizeTag(field, value string) (string, string) {
 // query-string-type[0] query later on. Returns error on empty query.
 //
 // [0]: http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/query-dsl-query-string-query.html
-func (e *QueryEngine) buildTagQuery(tag *SourceRequest_Tag) (*search.QueryDsl, error) {
+func (e *QueryEngine) buildTagQuery(tag *SourceRequest_Tag) (map[string]interface{}, error) {
 	field, value := e.sanitizeTag(*tag.Field, *tag.Value)
 	// Don't bother running empty queries.
 	if value == "" {
 		return nil, errors.New("empty query string")
 	}
-	qs := new(search.QueryString)
-	qs.Fields = make([]string, 0)
-	qs.Fields = append(qs.Fields, field)
-	qs.Query = value
-	q := search.Query().Qs(qs)
-	return q, nil
+	fields := make([]string, 1)
+	fields[0] = field
+	qs := map[string]interface{} {
+		"query_string" : map[string]interface{} {
+			"query" : value,
+			"fields" : fields,
+			"analyzer" : "keyword",
+		},
+	}
+	return qs, nil
 }
 
 // buildOriginQuery returns the origin-matching part of the complete
 // query.
-func (e *QueryEngine) buildOriginQuery(origin string) *search.QueryDsl {
-	qs := new(search.QueryString)
-	qs.Fields = make([]string, 1)
-	qs.Fields[0] = "Origin"
-	qs.Query = origin
-	q := search.Query().Qs(qs)
-	return q
+func (e *QueryEngine) buildOriginQuery(origin string) map[string]interface{} {
+	fields := make([]string, 1)
+	fields[0] = "Origin"
+	qs := map[string]interface{} {
+		"query_string" : map[string]interface{} {
+			"query" : origin,
+			"fields" : fields,
+		},
+	}
+	return qs
 }
 
 // SourceQuery is a multi-level map type representing an Elasticsearch
@@ -135,8 +141,9 @@ func (e *QueryEngine) BuildQuery(origin string, req *SourceRequest) (SourceQuery
 	if req.Address != nil {
 		query := map[string]interface{}{
 			"query": map[string]interface{}{
-				"term": map[string]uint64{
-					"Address": *(req.Address),
+				"field": map[string]interface{} {
+					"Address" : *(req.Address),
+					"analyzer" : "keyword",
 				},
 			},
 			"from": fromResult,
@@ -152,6 +159,7 @@ func (e *QueryEngine) BuildQuery(origin string, req *SourceRequest) (SourceQuery
 			"query": map[string]interface{}{
 				"query_string": map[string]interface{}{
 					"query": qs,
+					"analyzer": "keyword",
 				},
 			},
 			"from": fromResult,
@@ -160,15 +168,15 @@ func (e *QueryEngine) BuildQuery(origin string, req *SourceRequest) (SourceQuery
 		return SourceQuery(query), nil
 	}
 	tags := req.GetTags()
-	tagQueries := make([]*search.QueryDsl, 0)
+	tagQueries := make([]*map[string]interface{}, 0)
 	for _, tag := range tags {
 		q, err := e.buildTagQuery(tag)
 		if q != nil && err == nil {
-			tagQueries = append(tagQueries, q)
+			tagQueries = append(tagQueries, &q)
 		}
 	}
 	originTag := e.buildOriginQuery(origin)
-	tagQueries = append(tagQueries, originTag)
+	tagQueries = append(tagQueries, &originTag)
 	if len(tagQueries) == 0 {
 		return nil, errors.New("No valid query strings found.")
 	}

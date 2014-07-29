@@ -102,7 +102,6 @@ func (e *QueryEngine) buildOriginQuery(origin string) map[string]interface{} {
 		"query_string" : map[string]interface{} {
 			"query" : origin,
 			"fields" : fields,
-			"analyzer" : "keyword",
 		},
 	}
 	return qs

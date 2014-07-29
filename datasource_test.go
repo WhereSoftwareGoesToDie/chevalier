@@ -22,5 +22,9 @@ func TestEmptyDataSource(t *testing.T) {
 	if ds.Empty() {
 		t.Errorf("I think a non-empty datasource is empty.")
 	}
+	ds.Source = ds.Source[:0]
+	if !ds.Empty() {
+		t.Errorf("I think a cleared datasource is non-empty.")
+	}
 }
 

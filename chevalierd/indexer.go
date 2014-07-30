@@ -94,6 +94,6 @@ func RunIndexer(cfg Config) {
 		IndexerLogger.Infof("Starting run.")
 		fullUpdate(writer, cfg.Vaultaire.ContentsEndpoint, cfg.Vaultaire.Origins, cfg.Indexer.Parallelism)
 		IndexerLogger.Debugf("Indexer sleeping for %v seconds.", cfg.Indexer.IndexInterval)
-		time.Sleep(cfg.Indexer.IndexInterval * time.Second)
+		time.Sleep(time.Duration(cfg.Indexer.IndexInterval) * time.Second)
 	}
 }

@@ -5,6 +5,7 @@ import (
 	"github.com/anchor/picolog"
 	zmq "github.com/pebbe/zmq4"
 	"syscall"
+	"time"
 )
 
 var IndexerLogger *picolog.Logger
@@ -86,11 +87,13 @@ func RunIndexerOnce(cfg Config) {
 }
 
 func RunIndexer(cfg Config) {
-	Logger.Infof("Starting chevalierd %v in indexer mode.", Version)
+	Logger.Infof("Starting chevalierd %v in indexer mode. Index interval: %v seconds.", Version, cfg.Indexer.IndexInterval)
 	IndexerLogger = Logger.NewSubLogger("indexer")
 	writer := getElasticsearchWriter(cfg)
 	for {
 		IndexerLogger.Infof("Starting run.")
 		fullUpdate(writer, cfg.Vaultaire.ContentsEndpoint, cfg.Vaultaire.Origins, cfg.Indexer.Parallelism)
+		IndexerLogger.Debugf("Indexer sleeping for %v seconds.", cfg.Indexer.IndexInterval)
+		time.Sleep(cfg.Indexer.IndexInterval * time.Second)
 	}
 }

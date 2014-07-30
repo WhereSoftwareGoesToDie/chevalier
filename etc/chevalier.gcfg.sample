@@ -22,3 +22,5 @@ origins = FEDCBA
 
 [indexer]
 parallelism = 4
+# Run indexing once per minute
+indexinterval = 60

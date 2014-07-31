@@ -44,3 +44,25 @@ func TestDecodeContentsEntry(t *testing.T) {
 		t.Errorf("Expected tag foo in source dict %v", res.entry.tags)
 	}
 }
+
+func TestDecodeEmptyTag(t *testing.T) {
+	buf := new(bytes.Buffer)
+	buf.WriteByte(2) // ContentsListEntry
+	addr := int64(42)
+	dict := []byte("foo:,")
+	dictLen := int64(len(dict))
+	binary.Write(buf, binary.LittleEndian, addr)
+	binary.Write(buf, binary.LittleEndian, dictLen)
+	buf.Write(dict)
+	res, err := unpackContentsResponse(buf.Bytes())
+	if err != nil {
+		t.Errorf("Error decoding packet: %v", err)
+	}
+	if v, ok := res.entry.tags["foo"]; ok {
+		if v != "" {
+			t.Errorf("Corrupted tag: expected empty string, got %v (in source dict %v)", v, res.entry.tags)
+		}
+	} else {
+		t.Errorf("Empty value failure: expected tag foo in source dict %v", res.entry.tags)
+	}
+}

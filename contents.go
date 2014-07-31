@@ -41,8 +41,8 @@ type ContentsResponse struct {
 }
 
 // unpackTags takes a byteslice representing a comma-separated list of
-// field:value pairs (assumed to be UTF-8). It returns the corresponding
-// map of fields to values.
+// field:value pairs (assumed to be UTF-8, value may be empty). It
+// returns the corresponding map of fields to values.
 func unpackTags(tagData []byte) (map[string]string, error) {
 	tags := make(map[string]string, 0)
 	if len(tagData) == 0 {
@@ -57,11 +57,16 @@ func unpackTags(tagData []byte) (map[string]string, error) {
 			continue
 		}
 		idx := strings.Index(p, ":")
-		if idx == -1 || idx+1 == len(p) {
+		// Invalid tag, does not contain colon.
+		if idx == -1 {
 			return tags, errors.New(fmt.Sprintf("Could not parse tag %v.", p))
 		}
+		// Value is allowed to be empty.
+		val := ""
+		if idx+1 != len(p) {
+			val = p[idx+1:]
+		}
 		field := p[:idx]
-		val := p[idx+1:]
 		tags[field] = val
 	}
 	return tags, nil

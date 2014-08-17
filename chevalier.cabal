@@ -1,0 +1,19 @@
+name:                chevalier
+version:             0.1.0.0
+synopsis:            Data source search engine for Vaultaire
+-- description:         
+homepage:            https://github.com/anchor/chevalier
+license:             MIT
+license-file:        LICENSE
+author:              Sharif Olorin
+maintainer:          engineering@anchor.net.au
+copyright:           Anchor Systems 2014   
+build-type:          Simple
+extra-source-files:  README.md
+cabal-version:       >=1.10
+
+executable chevalierd
+  main-is:             Main.hs
+  build-depends:       base >=4.7 && <4.8
+  hs-source-dirs:      src
+  default-language:    Haskell2010

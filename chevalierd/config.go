@@ -29,6 +29,6 @@ type Config struct {
 		// Note that the Elasticsearch writer will use MaxConns
 		// threads of its own.
 		Parallelism uint
-		IndexInterval uint
+		IndexInterval int64
 	}
 }
